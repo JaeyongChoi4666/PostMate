@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: PostMate
+  datasource:
+    url: jdbc:mysql://localhost:3306/postmate?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: dnfl4585
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update   # 개발 중에는 update/validate, 운영은 ddl-auto 비권장
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  thymeleaf:
+    enabled: true
+    cache: false

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>승희의 PostMate</title>
+    <link rel="stylesheet" href="/main.css" />
+</head>
+<body>
+<main class="calendar" aria-label="달력">
+    <header class="cal-header">
+        <div class="title" aria-live="polite" aria-atomic="true">
+            <span class="month" id="monthLabel">월</span>
+            <span class="year" id="yearLabel">년</span>
+        </div>
+        <div class="controls">
+            <span style="font-size: 30px; color: #22d3ee" id="payment" >300,000</span>
+            <span style="font-size: 20px; padding-top: 5px">원</span>
+            <button id="prevBtn" aria-label="이전 달">◀</button>
+            <button id="todayBtn" class="primary" aria-label="오늘로 이동">오늘</button>
+            <button id="nextBtn" aria-label="다음 달">▶</button>
+        </div>
+    </header>
+
+    <section class="grid" id="dowRow" aria-hidden="true"></section>
+    <section class="grid" id="daysGrid" role="feed" aria-label="날짜 그리드"></section>
+</main>
+
+<script>
+    // ----- Utility: Korean labels -----
+    const MONTHS = [
+        '1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'
+    ];
+    const DOW = ['일','월','화','수','목','금','토']; // 일요일 시작
+
+    const monthLabel = document.getElementById('monthLabel');
+    const yearLabel  = document.getElementById('yearLabel');
+    const dowRow     = document.getElementById('dowRow');
+    const daysGrid   = document.getElementById('daysGrid');
+    const prevBtn    = document.getElementById('prevBtn');
+    const nextBtn    = document.getElementById('nextBtn');
+    const todayBtn   = document.getElementById('todayBtn');
+
+    // Weekday header
+    function renderDOW() {
+        dowRow.innerHTML = '';
+        for (const d of DOW) {
+            const el = document.createElement('div');
+            el.className = 'dow';
+            el.textContent = d;
+            dowRow.appendChild(el);
+        }
+    }
+
+    // State
+    const today = new Date();
+    let current = new Date(today.getFullYear(), today.getMonth(), 1);
+    let selected = null; // Date object or null
+
+    function sameDate(a, b) {
+        return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    }
+
+    function render() {
+        const year = current.getFullYear();
+        const month = current.getMonth();
+
+        monthLabel.textContent = MONTHS[month];
+        yearLabel.textContent = String(year);
+
+        // Find first day offset and days in month
+        const firstDay = new Date(year, month, 1);
+        const startWeekday = firstDay.getDay(); // 0=Sun
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // Previous month's trailing days
+        const prevDays = startWeekday; // number of cells from previous month (since Sun start)
+        const prevMonthDays = new Date(year, month, 0).getDate();
+
+        // Build 6 weeks (42 cells) grid for consistent height
+        const totalCells = 35;
+        const cells = [];
+
+        for (let i = 0; i < totalCells; i++) {
+            const cell = document.createElement('button');
+            cell.type = 'button';
+            cell.className = 'day';
+            cell.setAttribute('role','gridcell');
+
+            const dateSpan = document.createElement('span');
+            dateSpan.className = 'date';
+
+            let d, display, inCurrent = false;
+            if (i < prevDays) {
+                // from previous month
+                const dayNum = prevMonthDays - prevDays + 1 + i;
+                d = new Date(year, month - 1, dayNum);
+                display = dayNum;
+                cell.classList.add('muted');
+            } else if (i < prevDays + daysInMonth) {
+                // current month
+                const dayNum = i - prevDays + 1;
+                d = new Date(year, month, dayNum);
+                display = dayNum;
+                inCurrent = true;
+            } else {
+                // next month
+                const dayNum = i - (prevDays + daysInMonth) + 1;
+                d = new Date(year, month + 1, dayNum);
+                display = dayNum;
+                cell.classList.add('muted');
+            }
+
+            dateSpan.textContent = display;
+            cell.appendChild(dateSpan);
+
+            if (sameDate(d, today)) cell.classList.add('today');
+            if (selected && sameDate(d, selected)) cell.classList.add('selected');
+
+            // ARIA label for screen readers
+            cell.setAttribute('aria-label', `${d.getFullYear()}년 ${MONTHS[d.getMonth()]} ${d.getDate()}일`);
+
+            // Click to select
+            cell.addEventListener('click', () => {
+                selected = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+                // If clicking an adjacent month cell, navigate to that month
+                if (d.getMonth() !== month) {
+                    current = new Date(d.getFullYear(), d.getMonth(), 1);
+                }
+                render();
+            });
+
+            cells.push(cell);
+        }
+
+        daysGrid.innerHTML = '';
+        for (const c of cells) daysGrid.appendChild(c);
+    }
+
+    // Navigation
+    prevBtn.addEventListener('click', () => {
+        current = new Date(current.getFullYear(), current.getMonth() - 1, 1);
+        render();
+    });
+    nextBtn.addEventListener('click', () => {
+        current = new Date(current.getFullYear(), current.getMonth() + 1, 1);
+        render();
+    });
+    todayBtn.addEventListener('click', () => {
+        current = new Date(today.getFullYear(), today.getMonth(), 1);
+        selected = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        render();
+    });
+
+    // Init
+    renderDOW();
+    render();
+</script>
+</body>
+</html>
