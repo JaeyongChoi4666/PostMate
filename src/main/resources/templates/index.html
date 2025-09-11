@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>승희의 PostMate</title>
     <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
 </head>
 <body>
 <main class="calendar" aria-label="달력">
@@ -15,14 +16,14 @@
         </div>
         <div class="controls">
             <span style="font-size: 30px; color: #22d3ee" id="payment" >300,000</span>
-            <span style="font-size: 20px; padding-top: 5px">원</span>
+            <span style="font-size: 20px; color: #e5e7eb; padding-top: 5px">원</span>
             <button id="prevBtn" aria-label="이전 달">◀</button>
             <button id="todayBtn" class="primary" aria-label="오늘로 이동">오늘</button>
             <button id="nextBtn" aria-label="다음 달">▶</button>
         </div>
     </header>
 
-    <section class="grid" id="dowRow" aria-hidden="true"></section>
+    <section class="gridHeader" id="dowRow" aria-hidden="true"></section>
     <section class="grid" id="daysGrid" role="feed" aria-label="날짜 그리드"></section>
 </main>
 
@@ -82,7 +83,7 @@
         const cells = [];
 
         for (let i = 0; i < totalCells; i++) {
-            const cell = document.createElement('button');
+            const cell = document.createElement('div');
             cell.type = 'button';
             cell.className = 'day';
             cell.setAttribute('role','gridcell');
@@ -92,7 +93,7 @@
 
             let d, display, inCurrent = false;
             if (i < prevDays) {
-                // from previous month
+                // previous month
                 const dayNum = prevMonthDays - prevDays + 1 + i;
                 d = new Date(year, month - 1, dayNum);
                 display = dayNum;
@@ -115,7 +116,6 @@
             cell.appendChild(dateSpan);
 
             if (sameDate(d, today)) cell.classList.add('today');
-            if (selected && sameDate(d, selected)) cell.classList.add('selected');
 
             // ARIA label for screen readers
             cell.setAttribute('aria-label', `${d.getFullYear()}년 ${MONTHS[d.getMonth()]} ${d.getDate()}일`);
@@ -129,6 +129,11 @@
                 }
                 render();
             });
+
+            cell.addEventListener('dblclick', () => {
+                alert("더블클릭")
+            });
+
 
             cells.push(cell);
         }
