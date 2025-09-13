@@ -3,7 +3,7 @@
     --card: #111827;        /* gray-900 */
     --muted: #94a3b8;       /* slate-400 */
     --text: #e5e7eb;        /* gray-200 */
-    --accent: #22d3ee;      /* cyan-400 */
+    --accent: #0dcaf0;      /* cyan-400 */
     --accent-weak: #155e75; /* cyan-800 */
     --ring: rgba(34,211,238,0.45);
 }
@@ -17,7 +17,11 @@ body {
 }
 
 .calendar {
-    width: min(960px, 95vw); background: var(--card); border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    width: min(960px); background: var(--card); border-radius: 20px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); margin-right: 20px;
+}
+
+.contract {
+    width: min(350px); background: var(--card); border-radius: 20px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
 }
 
 .cal-header {
