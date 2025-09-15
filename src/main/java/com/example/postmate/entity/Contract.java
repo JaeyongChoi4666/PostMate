@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "tbl_contract")
+@Data
 @Getter
 @Setter
 @NoArgsConstructor

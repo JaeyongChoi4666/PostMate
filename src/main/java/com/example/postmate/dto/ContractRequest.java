@@ -16,7 +16,7 @@ public class ContractRequest {
 
     private LocalDate endDate;
 
-    private String contractType;
+    private String contractCategory;
 
     private BigDecimal contractPayment; // 금액은 BigDecimal 권장
 
