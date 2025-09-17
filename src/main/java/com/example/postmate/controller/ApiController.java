@@ -27,6 +27,10 @@ public class ApiController {
             // 클라이언트 콘솔에서 xhr.status, xhr.responseText로 바로 확인 가능
             return ResponseEntity.internalServerError().build();
         }
+    }
 
+    @GetMapping(value = "/searchContact")
+    public ResponseEntity<String> searchContact(@RequestParam(required = false) String conTitle) {
+        return ResponseEntity.ok(apiService.searchContract(conTitle).toString());
     }
 }

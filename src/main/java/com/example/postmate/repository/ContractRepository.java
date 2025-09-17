@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, Long> {
@@ -20,7 +22,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             TBL_CONTRACT (CON_TITLE, CON_ST_DATE, CON_ED_DATE, CON_CATEGORY, CON_STATE, PAYMENT, CON_CHANNEL)
     VALUES (:conTitle,:conStDate,:conEdDate,:conCategory,'계약중',:payment,:conChannel)
     """, nativeQuery = true)
-    Integer insertContract(
+    Integer addContract(
             @Param("conTitle") String conTitle,
             @Param("conStDate") String conStDate,
             @Param("conEdDate") String conEdDate,
@@ -28,4 +30,9 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             @Param("payment") BigDecimal payment,
             @Param("conChannel") String conChannel
     );
+
+    @Query(value = """
+    SELECT * FROM TBL_CONTRACT WHERE (:conTitle IS NULL OR CON_TITLE = :conTitle)
+    """, nativeQuery = true)
+    List<Map<String, Object>> searchContract(String conTitle);
 }
