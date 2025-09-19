@@ -29,8 +29,8 @@ public class ApiController {
         }
     }
 
-    @GetMapping(value = "/searchContact")
-    public ResponseEntity<String> searchContact(@RequestParam(required = false) String conTitle) {
-        return ResponseEntity.ok(apiService.searchContract(conTitle).toString());
+    @GetMapping(value = "/searchContract")
+    public ResponseEntity<?> searchContract(@RequestParam(required = false) String conTitle) {
+        return ResponseEntity.ok(apiService.searchContract(conTitle));
     }
 }

@@ -32,7 +32,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     );
 
     @Query(value = """
-    SELECT * FROM TBL_CONTRACT WHERE (:conTitle IS NULL OR CON_TITLE = :conTitle)
+    SELECT * FROM TBL_CONTRACT WHERE (:conTitle IS NULL OR :conTitle ='' OR CON_TITLE = :conTitle)
     """, nativeQuery = true)
     List<Map<String, Object>> searchContract(String conTitle);
 }
