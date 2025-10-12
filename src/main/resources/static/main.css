@@ -61,9 +61,18 @@ button:active { transform: translateY(1px); }
 }
 
 .day {
-    aspect-ratio: 1/1; background: #0b1220; border: 1px solid rgba(148,163,184,0.15);
-    padding: 10px; display: flex; align-items: flex-start; position: relative; overflow: hidden; isolation: isolate;
+    aspect-ratio: 1/1;
+    background: #0b1220;
+    border: 1px solid rgba(148,163,184,0.15);
+    padding: 4px;
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
     transition: background .2s ease, border-color .2s ease, transform .06s ease;
+    min-height: 80px;
+    flex-direction: column;
 }
 .day:hover { background: #0e1627; border-color: rgba(148,163,184,0.35); }
 
@@ -84,4 +93,17 @@ button:active { transform: translateY(1px); }
     .day { padding: 8px; }
     .date { font-size: 13px; }
     button { padding: 8px 10px; }
+}
+
+.schedule-indicators {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.schedule-indicator {
+    cursor: pointer;
+}
+
+.schedule-indicator:hover {
+    opacity: 0.8;
 }

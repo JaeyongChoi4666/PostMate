@@ -40,8 +40,21 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
     );
 
     @Query(value = """
-    SELECT *
-    FROM TBL_SCHEDULE
+    SELECT
+        SC.SCH_NO,
+        SC.SCH_TITLE,
+        SC.SCH_ST_DATE,
+        SC.SCH_ED_DATE,
+        SC.SCH_CATEGORY,
+        SC.SCH_STATE,
+        SC.PAYMENT,
+        SC.SCH_MEMO,
+        CA.CATE_NAME,
+        ST.STATE_NAME,
+        ST.STATE_COLOR
+    FROM TBL_SCHEDULE SC
+        LEFT JOIN TBL_CATEGORY CA   ON SC.SCH_CATEGORY = CA.CATE_NO
+        LEFT JOIN TBL_STATE ST      ON SC.SCH_STATE = ST.STATE_NO
     WHERE SCH_ST_DATE <= :schEndDate
         AND SCH_ED_DATE >= :schStrDate
     """, nativeQuery = true)

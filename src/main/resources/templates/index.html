@@ -187,9 +187,32 @@
     const today = new Date();
     let current = new Date(today.getFullYear(), today.getMonth(), 1);
     let selected = null; // Date object or null
+    let scheduleData = []; // 일정 데이터를 저장할 전역 변수 추가
 
     function sameDate(a, b) {
         return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    }
+
+
+    // 날짜 문자열을 로컬 시간대 00:00:00으로 변환하는 유틸리티 함수
+    function parseLocalDate(dateStr) {
+        if (!dateStr) return null;
+        const [year, month, day] = dateStr.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    }
+
+    // 특정 날짜가 일정 범위에 포함되는지 확인하는 함수
+    function isDateInSchedule(date, schedule) {
+        const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const startDate = parseLocalDate(schedule.SCH_ST_DATE);
+        const endDate = parseLocalDate(schedule.SCH_ED_DATE);
+
+        return targetDate >= startDate && targetDate <= endDate;
+    }
+
+    // 해당 날짜의 일정들을 반환하는 함수
+    function getSchedulesForDate(date) {
+        return scheduleData.filter(schedule => isDateInSchedule(date, schedule));
     }
 
     function render() {
@@ -245,6 +268,50 @@
             dateSpan.textContent = display;
             cell.appendChild(dateSpan);
 
+            // 해당 날짜의 일정들 가져오기
+            const daySchedules = getSchedulesForDate(d);
+
+            // 일정이 있으면 표시
+            if (daySchedules.length > 0 && inCurrent) {
+                const scheduleContainer = document.createElement('div');
+                scheduleContainer.className = 'schedule-indicators';
+
+                // 최대 3개까지만 표시 (더 많으면 +N 표시)
+                const maxDisplay = 3;
+                daySchedules.slice(0, maxDisplay).forEach(schedule => {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'schedule-indicator';
+                    indicator.textContent = schedule.SCH_TITLE;
+                    indicator.title = `${schedule.SCH_TITLE} (${schedule.SCH_ST_DATE} ~ ${schedule.SCH_ED_DATE})`;
+
+                    // 카테고리별 색상 적용 (선택사항)
+                    indicator.style.fontSize = '11px';
+                    indicator.style.overflow = 'hidden';
+                    indicator.style.textOverflow = 'ellipsis';
+                    indicator.style.whiteSpace = 'nowrap';
+                    indicator.style.backgroundColor = schedule.STATE_COLOR;
+                    indicator.style.color = '#1e293b';
+                    indicator.style.padding = '2px 4px';
+                    indicator.style.borderRadius = '3px';
+                    indicator.style.marginTop = '2px';
+
+                    scheduleContainer.appendChild(indicator);
+                });
+
+                // 더 많은 일정이 있으면 표시
+                if (daySchedules.length > maxDisplay) {
+                    const moreIndicator = document.createElement('div');
+                    moreIndicator.className = 'schedule-more';
+                    moreIndicator.textContent = `+${daySchedules.length - maxDisplay}개`;
+                    moreIndicator.style.fontSize = '9px';
+                    moreIndicator.style.color = '#94a3b8';
+                    moreIndicator.style.marginTop = '2px';
+                    scheduleContainer.appendChild(moreIndicator);
+                }
+
+                cell.appendChild(scheduleContainer);
+            }
+
             if (sameDate(d, today)) cell.classList.add('today');
 
             // ARIA label for screen readers
@@ -285,16 +352,16 @@
     // Navigation
     prevBtn.addEventListener('click', () => {
         current = new Date(current.getFullYear(), current.getMonth() - 1, 1);
-        render();
+        searchSchedule(current.getFullYear(), current.getMonth());
     });
     nextBtn.addEventListener('click', () => {
         current = new Date(current.getFullYear(), current.getMonth() + 1, 1);
-        render();
+        searchSchedule(current.getFullYear(), current.getMonth());
     });
     todayBtn.addEventListener('click', () => {
         current = new Date(today.getFullYear(), today.getMonth(), 1);
         selected = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        render();
+        searchSchedule(current.getFullYear(), current.getMonth());
     });
 
     //이벤트 걸기
@@ -544,8 +611,6 @@
         const firstDayStr = fmt(fistStart);
         const lastDayStr = fmt(lastEnd);
 
-        console.log(firstDayStr, lastDayStr);
-
         $.ajax({
             url: "/searchSchedule",
             type: "GET",
@@ -554,7 +619,10 @@
                 schEndDate: lastDayStr
             },
             success: function(response) {
-                console.log(response);
+                // 일정 데이터를 전역 변수에 저장
+                scheduleData = response;
+                // 달력 다시 렌더링
+                render();
             },
             error: function(xhr) {
                 console.log("status:", xhr.status);
