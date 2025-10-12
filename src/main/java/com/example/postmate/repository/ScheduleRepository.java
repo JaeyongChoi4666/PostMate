@@ -30,12 +30,23 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
     VALUES (:schTitle,:schStDate,:schEdDate,:schCategory,:schState,:payment,:schMemo)
     """, nativeQuery = true)
     Integer addSchedule(
-            @Param("schTitle") String schTitle,
-            @Param("schStDate") String schStDate,
-            @Param("schEdDate") String schEdDate,
-            @Param("schCategory") String schCategory,
-            @Param("schState") String schState,
-            @Param("payment") BigDecimal payment,
-            @Param("schMemo") String schMemo
+        @Param("schTitle") String schTitle,
+        @Param("schStDate") String schStDate,
+        @Param("schEdDate") String schEdDate,
+        @Param("schCategory") String schCategory,
+        @Param("schState") String schState,
+        @Param("payment") BigDecimal payment,
+        @Param("schMemo") String schMemo
+    );
+
+    @Query(value = """
+    SELECT *
+    FROM TBL_SCHEDULE
+    WHERE SCH_ST_DATE <= :schEndDate
+        AND SCH_ED_DATE >= :schStrDate
+    """, nativeQuery = true)
+    List<Map<String, Object>> searchSchedule(
+        @Param("schStrDate") String schStrDate,
+        @Param("schEndDate") String schEndDate
     );
 }

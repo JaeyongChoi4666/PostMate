@@ -23,12 +23,12 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     VALUES (:conTitle,:conStDate,:conEdDate,:conCategory,:payment,:conChannel)
     """, nativeQuery = true)
     Integer addContract(
-            @Param("conTitle") String conTitle,
-            @Param("conStDate") String conStDate,
-            @Param("conEdDate") String conEdDate,
-            @Param("conCategory") String conCategory,
-            @Param("payment") BigDecimal payment,
-            @Param("conChannel") String conChannel
+        @Param("conTitle") String conTitle,
+        @Param("conStDate") String conStDate,
+        @Param("conEdDate") String conEdDate,
+        @Param("conCategory") String conCategory,
+        @Param("payment") BigDecimal payment,
+        @Param("conChannel") String conChannel
     );
 
     @Query(value = """
@@ -38,7 +38,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
         (:conTitle IS NULL OR :conTitle = '' OR CON_TITLE LIKE CONCAT('%', :conTitle, '%'))
     AND CON_ED_DATE > NOW()
     """, nativeQuery = true)
-    List<Map<String, Object>> searchContract(String conTitle);
+    List<Map<String, Object>> searchContract(@Param("conTitle") String conTitle);
 
     @Query(value = """
     SELECT *
@@ -46,6 +46,6 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     WHERE
         (:conTitle IS NULL OR :conTitle ='' OR CON_TITLE LIKE CONCAT('%', :conTitle, '%'))
     """, nativeQuery = true)
-    List<Map<String, Object>> searchContractAll(String conTitle);
+    List<Map<String, Object>> searchContractAll(@Param("conTitle") String conTitle);
 
 }

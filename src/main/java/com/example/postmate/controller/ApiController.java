@@ -71,4 +71,10 @@ public class ApiController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    //일정검색
+    @GetMapping(value = "/searchSchedule")
+    public ResponseEntity<?> searchSchedule(@RequestParam String schStrDate,@RequestParam String schEndDate) {
+        return ResponseEntity.ok(apiService.searchSchedule(schStrDate,schEndDate));
+    }
 }

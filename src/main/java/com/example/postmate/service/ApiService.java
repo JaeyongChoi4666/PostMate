@@ -66,4 +66,8 @@ public class ApiService {
                 request.getScheduleMemo()
         );
     }
+
+    public List<Map<String, Object>> searchSchedule(String schStrDate,String schEndDate){
+        return scheduleRepository.searchSchedule(schStrDate,schEndDate);
+    }
 }

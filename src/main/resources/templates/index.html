@@ -415,7 +415,9 @@
                     }
                 })
             }
-        })
+        });
+
+
     });
 
     //검색창에 enter키 입력시 바로 검색
@@ -518,11 +520,58 @@
         });
     }
 
+    function searchSchedule(year, month) {
+        const pad = (n) => String(n).padStart(2, '0');
+        const fmt = (dt) =>
+            `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
+
+        // 1) fistDate: '이 달 1일'이 포함된 주의 일요일
+        const firstOfMonth = new Date(year, month, 1);
+        const dowFirst = firstOfMonth.getDay(); // 0=일 ~ 6=토
+        const fistStart = new Date(firstOfMonth);
+        fistStart.setDate(firstOfMonth.getDate() - dowFirst); // 그 주의 일요일
+
+        // 2) lastDate: '이 달 31일(없으면 말일)'이 포함된 주의 토요일
+        let anchor = new Date(year, month, 31);
+        if (anchor.getMonth() !== month) {
+            // 31일이 없는 달이면 말일로 대체
+            anchor = new Date(year, month + 1, 0);
+        }
+        const dowAnchor = anchor.getDay(); // 0=일 ~ 6=토
+        const lastEnd = new Date(anchor);
+        lastEnd.setDate(anchor.getDate() + (6 - dowAnchor)); // 그 주의 토요일
+
+        const firstDayStr = fmt(fistStart);
+        const lastDayStr = fmt(lastEnd);
+
+        console.log(firstDayStr, lastDayStr);
+
+        $.ajax({
+            url: "/searchSchedule",
+            type: "GET",
+            data: {
+                schStrDate: firstDayStr,
+                schEndDate: lastDayStr
+            },
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(xhr) {
+                console.log("status:", xhr.status);
+                console.log("response:", xhr.responseText);
+                alert("삭제 중 오류가 발생했습니다.");
+            }
+        });
+
+    }
+
     // Init
     renderDOW();
     render();
     searchContract();
     loadScheduleCategory();
+    searchSchedule(today.getFullYear(), today.getMonth());
+
 </script>
 </body>
 </html>
