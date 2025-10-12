@@ -1,6 +1,7 @@
 package com.example.postmate.controller;
 
 import com.example.postmate.dto.ContractRequest;
+import com.example.postmate.dto.ScheduleRequest;
 import com.example.postmate.service.ApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,7 @@ public class ApiController {
 
     private final ApiService apiService;
 
-    //계약추가 ajax
+    //계약추가
     @PostMapping(value = "/addContract")
     public ResponseEntity<Integer> addContract(@RequestBody ContractRequest request) {
         log.info("POST /addContract called. payload={}", request);
@@ -30,6 +31,7 @@ public class ApiController {
         }
     }
 
+    //계약검색
     @GetMapping(value = "/searchContract")
     public ResponseEntity<?> searchContract(@RequestParam(required = false) String conTitle,@RequestParam String allYn) {
         if(allYn.equals("Y")) {
@@ -39,6 +41,7 @@ public class ApiController {
         }
     }
 
+    //계약삭제
     @DeleteMapping(value = "/deleteContract")
     public ResponseEntity<?> deleteContract(@RequestParam Long conId) {
         try {
@@ -49,4 +52,23 @@ public class ApiController {
         }
     }
 
+    //일정종류 불러오기
+    @GetMapping(value = "/loadScheduleCategory")
+    public ResponseEntity<?> loadScheduleCategory() {
+        return ResponseEntity.ok(apiService.loadScheduleCategory());
+    }
+
+    //일정추가
+    @PostMapping(value = "/addSchedule")
+    public ResponseEntity<Integer> addSchedule(@RequestBody ScheduleRequest request) {
+        log.info("POST /addSchedule called. payload={}", request);
+        try {
+            int result = apiService.addSchedule(request);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("addSchedule failed", e);
+            // 클라이언트 콘솔에서 xhr.status, xhr.responseText로 바로 확인 가능
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

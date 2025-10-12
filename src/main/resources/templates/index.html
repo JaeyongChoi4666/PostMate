@@ -30,6 +30,55 @@
         <section class="grid" id="daysGrid" role="feed" aria-label="날짜 그리드"></section>
     </div>
 
+    <!--스케줄 추가 modal -->
+    <div class="modal fade" id="popup_addSchedule" tabindex="-1" aria-labelledby="addScheduleLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addScheduleLabel">새로운 스케줄 추가하기</h1>
+                </div>
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control mb-3" id="scheduleTitle" placeholder="일정명을 입력하세요" value="" name="scheduleTitle" required>
+                        <label for="scheduleTitle">일정명</label>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md">
+                            <div class="form-floating">
+                                <input type="date" class="form-control" id="schStrDate" value="" name="schStrDate" required>
+                                <label for="schStrDate">일정 시작일</label>
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-floating">
+                                <input type="date" class="form-control" id="schEndDate" value="" name="schEndDate" required>
+                                <label for="schEndDate">일정 종료일</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="scheduleCategory" aria-label="scheduleCategory" name="scheduleCategory" required>
+                            <option value="0" selected>일정 종류를 선택해주세요</option>
+                        </select>
+                        <label for="scheduleCategory">일정종류</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control mb-3" id="schedulePayment" placeholder="수익금을 입력하세요" name="schedulePayment" step="1000" required>
+                        <label for="schedulePayment">수익금</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control mb-3" id="scheduleMemo" placeholder="일정 상세내용을 입력하세요" name="scheduleMemo" style="height: 100px" rows="4"></textarea>
+                        <label for="scheduleMemo">일정 상세</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        <button type="button" class="btn primary" id="addSchedule">신규 저장</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="contract" aria-label="계약">
         <div class="cal-header">
             <div class="container">
@@ -52,9 +101,7 @@
             </div>
         </div>
 
-        <div id="contractList">
-
-        </div>
+        <div id="contractList"></div>
 
         <!--계약 추가 modal -->
         <div class="modal fade" id="popup_addContract" tabindex="-1" aria-labelledby="addContractLabel" aria-hidden="true">
@@ -64,9 +111,10 @@
                         <h1 class="modal-title fs-5" id="addContractLabel">새로운 계약 추가하기</h1>
                     </div>
                     <div class="modal-body">
-                        <input type="text" class="form-control mb-3" id="contractTitle" placeholder="계약명을 입력하세요" value="" name="contractTitle" required>
-                        <label for="contractTitle">계약명</label>
-
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control mb-3" id="contractTitle" placeholder="계약명을 입력하세요" value="" name="contractTitle" required>
+                            <label for="contractTitle">계약명</label>
+                        </div>
                         <div class="row g-2 mb-3">
                             <div class="col-md">
                                 <div class="form-floating">
@@ -74,7 +122,6 @@
                                     <label for="strDate">계약 시작일</label>
                                 </div>
                             </div>
-
                             <div class="col-md">
                                 <div class="form-floating">
                                     <input type="date" class="form-control" id="endDate" value="" name="endDate" required>
@@ -82,7 +129,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="form-floating mb-3">
                             <select class="form-select" id="contractCategory" aria-label="contractCategory" name="contractCategory" required>
                                 <option value="0" selected>계약 종류를 선택해주세요</option>
@@ -92,12 +138,10 @@
                             </select>
                             <label for="contractCategory">계약종류</label>
                         </div>
-
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control mb-3" id="contractPayment" placeholder="계약금을 입력하세요" value="" name="contractPayment" required>
+                            <input type="number" class="form-control mb-3" id="contractPayment" placeholder="계약금을 입력하세요" value="" name="contractPayment" step="1000" required>
                             <label for="contractPayment">요금</label>
                         </div>
-
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control mb-3" id="contractChannel" placeholder="계약을 수주한 경로를 입력하세요" value="" name="contractChannel" required>
                             <label for="contractChannel">계약 수주 경로</label>
@@ -217,9 +261,19 @@
             });
 
             cell.addEventListener('dblclick', () => {
-                console.log("dblclick:"+d);
-            });
+                const selectedDay = new Intl.DateTimeFormat("en-CA", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    timeZone: "Asia/Seoul"
+                }).format(d);
+                console.log("dblclick:"+selectedDay);
 
+                const modal = new bootstrap.Modal(document.getElementById('popup_addSchedule'));
+                modal.show();
+
+                $("#schStrDate").val(selectedDay);
+            });
 
             cells.push(cell);
         }
@@ -245,43 +299,44 @@
 
     //이벤트 걸기
     $(document).ready(function() {
+        //계약추가
         $("#addContract").on("click", function() {
-            const contractTitle = $("#contractTitle").val();
-            const strDate = $("#strDate").val()
-            const endDate = $("#endDate").val()
-            const contractCategory = $("#contractCategory").val()
-            const contractPayment = $("#contractPayment").val()
-            const contractChannel = $("#contractChannel").val()
+            const contractTitle     = $("#contractTitle");
+            const strDate           = $("#strDate");
+            const endDate           = $("#endDate");
+            const contractCategory  = $("#contractCategory");
+            const contractPayment   = $("#contractPayment");
+            const contractChannel   = $("#contractChannel");
 
-            if(contractTitle === ""){
+            if(contractTitle.val() === ""){
                 alert("계약명을 입력하세요.");
-                $("#contractTitle").focus();
-            }else if(strDate === ""){
+                contractTitle.focus();
+            }else if(strDate.val() === ""){
                 alert("시작일을 입력하세요.");
-                $("#strDate").focus();
-            }else if(endDate === ""){
+                strDate.focus();
+            }else if(endDate.val() === ""){
                 alert("종료일을 입력하세요.");
-                $("#endDate").focus();
-            }else if(strDate > endDate){
+                endDate.focus();
+            }else if(strDate.val() > endDate.val()){
                 alert("종료일은 시작일 이후여야 합니다.");
-                $("#endDate").focus();
-            }else if(contractCategory === "0"){
+                endDate.focus();
+            }else if(contractCategory.val() === "0"){
                 alert("계약종류를 선택하세요.");
-                $("#contractCategory").focus();
-            }else if(contractPayment === ""){
+                contractCategory.focus();
+            }else if(contractPayment.val() === ""){
                 alert("요금을 입력하세요.");
-                $("#contractPayment").focus();
-            }else if(contractChannel === ""){
+                contractPayment.focus();
+            }else if(contractChannel.val() === ""){
                 alert("계약 수주 경로를 입력하세요.");
-                $("#contractChannel").focus();
+                contractChannel.focus();
             }else{
                 const formData = {
-                    contractTitle   : contractTitle,
-                    strDate         : strDate,
-                    endDate         : endDate,
-                    contractCategory: contractCategory,
-                    contractPayment : contractPayment,
-                    contractChannel : contractChannel
+                    contractTitle   : contractTitle.val(),
+                    strDate         : strDate.val(),
+                    endDate         : endDate.val(),
+                    contractCategory: contractCategory.val(),
+                    contractPayment : contractPayment.val(),
+                    contractChannel : contractChannel.val()
                 };
                 $.ajax({
                     type: "POST",
@@ -291,7 +346,7 @@
                     data: JSON.stringify(formData),
                     processData: false,
                     success: function(response) {
-                        alert("저장완료")
+                        alert("계약 저장완료")
                         location.reload();
                     },
                     error: function(xhr) {
@@ -302,9 +357,65 @@
             }
         });
 
+        //계약검색
         $("#chk_searchAll").on("click", function() {
             searchContract();
         });
+
+        //일정추가
+        $("#addSchedule").on("click", function() {
+            const scheduleTitle     = $("#scheduleTitle");
+            const schStrDate        = $("#schStrDate");
+            const schEndDate        = $("#schEndDate");
+            const scheduleCategory  = $("#scheduleCategory");
+            const schedulePayment   = $("#schedulePayment");
+            const scheduleMemo      = $("#scheduleMemo");
+
+            if(scheduleTitle.val() === ""){
+                alert("일정명을 입력하세요.");
+                scheduleTitle.focus();
+            }else if(schStrDate.val() === ""){
+                alert("시작일을 입력하세요.");
+                schStrDate.focus();
+            }else if(schEndDate.val() === ""){
+                alert("종료일을 입력하세요.");
+                schEndDate.focus();
+            }else if(schStrDate.val() > schEndDate.val()){
+                alert("종료일은 시작일 이후여야 합니다.");
+                schEndDate.focus();
+            }else if(scheduleCategory.val() === "0"){
+                alert("일정종류를 선택하세요.");
+                scheduleCategory.focus();
+            }else if(schedulePayment.val() === ""){
+                alert("수익금을 입력하세요.");
+                schedulePayment.focus();
+            }else{
+                const formData = {
+                    scheduleTitle       : scheduleTitle.val(),
+                    schStrDate          : schStrDate.val(),
+                    schEndDate          : schEndDate.val(),
+                    scheduleCategory    : scheduleCategory.val(),
+                    schedulePayment     : schedulePayment.val(),
+                    scheduleMemo        : scheduleMemo.val()
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/addSchedule",
+                    contentType: "application/json; charset=UTF-8",
+                    accept: "application/json",
+                    data: JSON.stringify(formData),
+                    processData: false,
+                    success: function(response) {
+                        alert("일정 저장완료")
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        console.log("status:", xhr.status);
+                        console.log("response:", xhr.responseText);
+                    }
+                })
+            }
+        })
     });
 
     //검색창에 enter키 입력시 바로 검색
@@ -389,10 +500,29 @@
         });
     }
 
+    function loadScheduleCategory() {
+        $.ajax({
+            url: "/loadScheduleCategory",
+            type: "GET",
+            success: function(response) {
+                $.each(response, function(i, v) {
+                    let innerHTML = '';
+                    innerHTML += '<option value="'+v.CATE_NO+'">'+v.CATE_NAME+'</option>';
+                    $("#scheduleCategory").append(innerHTML);
+                });
+            },
+            error: function(xhr) {
+                console.log("status:", xhr.status);
+                console.log("response:", xhr.responseText);
+            }
+        });
+    }
+
     // Init
     renderDOW();
     render();
     searchContract();
+    loadScheduleCategory();
 </script>
 </body>
 </html>
