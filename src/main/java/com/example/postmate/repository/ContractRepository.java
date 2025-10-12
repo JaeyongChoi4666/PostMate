@@ -19,7 +19,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     @Transactional
     @Query(value = """
     INSERT INTO
-            TBL_CONTRACT (CON_TITLE, CON_ST_DATE, CON_ED_DATE, CON_CATEGORY, CON_STATE, PAYMENT, CON_CHANNEL)
+        TBL_CONTRACT (CON_TITLE, CON_ST_DATE, CON_ED_DATE, CON_CATEGORY, CON_STATE, PAYMENT, CON_CHANNEL)
     VALUES (:conTitle,:conStDate,:conEdDate,:conCategory,'계약중',:payment,:conChannel)
     """, nativeQuery = true)
     Integer addContract(
@@ -32,7 +32,20 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     );
 
     @Query(value = """
-    SELECT * FROM TBL_CONTRACT WHERE (:conTitle IS NULL OR :conTitle ='' OR CON_TITLE = :conTitle)
+    SELECT *
+    FROM TBL_CONTRACT
+    WHERE
+        (:conTitle IS NULL OR :conTitle = '' OR CON_TITLE LIKE CONCAT('%', :conTitle, '%'))
+    AND (CON_ST_DATE < NOW() AND CON_ED_DATE > NOW())
     """, nativeQuery = true)
     List<Map<String, Object>> searchContract(String conTitle);
+
+    @Query(value = """
+    SELECT *
+    FROM TBL_CONTRACT
+    WHERE
+        (:conTitle IS NULL OR :conTitle ='' OR CON_TITLE LIKE CONCAT('%', :conTitle, '%'))
+    """, nativeQuery = true)
+    List<Map<String, Object>> searchContractAll(String conTitle);
+
 }

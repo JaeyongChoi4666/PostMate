@@ -38,8 +38,8 @@
                         <span class="year">계약상황</span>
                         <button type="button" class="btn primary btn-sm" data-bs-toggle="modal" data-bs-target="#popup_addContract">추가</button>
                         <div class="form-check ms-auto">
-                            <input class="form-check-input" type="checkbox" value="" id="checkDefault">
-                            <label class="form-check-label" for="checkDefault">종료계약 포함</label>
+                            <input class="form-check-input" type="checkbox" value="" id="chk_searchAll">
+                            <label class="form-check-label" for="chk_searchAll">종료계약 포함</label>
                         </div>
                     </div>
                 </div>
@@ -298,8 +298,26 @@
                 })
             }
         });
+
+        $("#chk_searchAll").on("click", function() {
+            searchContract();
+        });
     });
 
+    //검색창에 enter키 입력시 바로 검색
+    const searchInput = document.getElementById("conTitle");
+
+    searchInput.addEventListener("keydown", (e) => {
+        // 한글 등 조합 중 Enter는 무시
+        if (e.isComposing) return;
+        if (e.key === "Enter") {
+            e.preventDefault();
+            const v = searchInput.value.trim();
+            if (v) searchContract();
+        }
+    });
+
+    //사용되는 함수
     function searchContract() {
         $("#contractList").html('');
         $.ajax({
@@ -307,7 +325,8 @@
             type: "GET",
             dataType: "json",
             data: {
-                conTitle: $("#conTitle").val()
+                conTitle    : $("#conTitle").val(),
+                allYn       : $("#chk_searchAll").is(":checked") ? "Y" : "N"
             },
             success: function(response) {
                 $.each(response, function(i, v) {
@@ -318,13 +337,17 @@
                         div_badge = '<span class="badge text-bg-success" style="display:inline-block;">Place</span>'
                     }
                     let innerHTML = '';
-                    innerHTML += '<div class="card my-3 d-flex flex-row">';
-                    innerHTML += '  <div class="card-body">'
-                    innerHTML += '      <div class="fs-6" style="display:inline-block; margin-right:10px;">'+v.CON_TITLE+'</div>'+div_badge+'';
-                    innerHTML += '      <div class="mt-1 text-body-secondary" style="font-size: smaller">'+v.CON_ST_DATE+' ~ '+v.CON_ED_DATE+'</div>'
+                    innerHTML += '<div class="card my-3" style="position: relative;">';
+                    innerHTML += '  <button type="button" class="btn-close btn-close-white" aria-label="Close" onclick="deleteContract('+v.CON_NO+')" style="position: absolute; top: 10px; right: 10px; z-index: 10;"></button>'
+                    innerHTML += '  <div class="d-flex flex-row">';
+                    innerHTML += '      <div class="card-body" style="padding-right: 40px;">'
+                    innerHTML += '          <div class="fs-6" style="display:inline-block; margin-right:10px;">'+v.CON_TITLE+'</div>'+div_badge+'';
+                    innerHTML += '          <div class="mt-1 text-body-secondary" style="font-size: smaller">'+v.CON_ST_DATE+' ~ '+v.CON_ED_DATE+'</div>'
+                    innerHTML += '      </div>'
+                    innerHTML += '      <div class="card-body d-flex justify-content-end align-items-end" style="font-size: smaller">'+addCommas(v.PAYMENT)+' 원</div>'
                     innerHTML += '  </div>'
-                    innerHTML += '  <div class="card-body d-flex justify-content-end align-items-end" style="font-size: smaller">'+addCommas(v.PAYMENT)+' 원</div>'
                     innerHTML += '</div>'
+
                     $("#contractList").append(innerHTML);
                 })
 
@@ -338,6 +361,29 @@
 
     function addCommas(numStr) {
         return Number(numStr).toLocaleString();
+    }
+
+    function deleteContract(conId) {
+        if(!confirm('정말 이 계약을 삭제하시겠습니까?')) {
+            return;
+        }
+
+        $.ajax({
+            url: "/deleteContract",
+            type: "DELETE",
+            data: {
+                conId: conId
+            },
+            success: function(response) {
+                alert("삭제되었습니다.");
+                searchContract(); // 목록 새로고침
+            },
+            error: function(xhr) {
+                console.log("status:", xhr.status);
+                console.log("response:", xhr.responseText);
+                alert("삭제 중 오류가 발생했습니다.");
+            }
+        });
     }
 
     // Init

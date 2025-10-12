@@ -4,6 +4,7 @@ import com.example.postmate.dto.ContractRequest;
 import com.example.postmate.service.ApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,22 @@ public class ApiController {
     }
 
     @GetMapping(value = "/searchContract")
-    public ResponseEntity<?> searchContract(@RequestParam(required = false) String conTitle) {
-        return ResponseEntity.ok(apiService.searchContract(conTitle));
+    public ResponseEntity<?> searchContract(@RequestParam(required = false) String conTitle,@RequestParam String allYn) {
+        if(allYn.equals("Y")) {
+            return ResponseEntity.ok(apiService.searchContractAll(conTitle));
+        }else{
+            return ResponseEntity.ok(apiService.searchContract(conTitle));
+        }
     }
+
+    @DeleteMapping(value = "/deleteContract")
+    public ResponseEntity<?> deleteContract(@RequestParam Long conId) {
+        try {
+            apiService.deleteContract(conId);
+            return ResponseEntity.ok("삭제 완료");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제 실패: " + e.getMessage());
+        }
+    }
+
 }

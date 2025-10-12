@@ -28,4 +28,12 @@ public class ApiService {
     public List<Map<String, Object>> searchContract(String conTitle){
         return contractRepository.searchContract(conTitle);
     }
+
+    public List<Map<String, Object>> searchContractAll(String conTitle){
+        return contractRepository.searchContractAll(conTitle);
+    }
+
+    public void deleteContract(Long conId) {
+        contractRepository.deleteById(conId);
+    }
 }
