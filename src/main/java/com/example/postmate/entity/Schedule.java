@@ -29,11 +29,11 @@ public class Schedule {
     @Column(name = "SCH_ED_DATE", nullable = false)
     private LocalDate endDate;
 
-    @Column(name = "SCH_CATEGORY", length = 45)
-    private String category;
+    @JoinColumn(name = "SCH_CATEGORY", referencedColumnName = "CATE_NO")
+    private Integer category;
 
-    @Column(name = "SCH_STATE", length = 10)
-    private String state;
+    @JoinColumn(name = "SCH_STATE", referencedColumnName = "STATE_NO")
+    private Integer state;
 
     @Column(name = "PAYMENT")
     private Integer payment;
