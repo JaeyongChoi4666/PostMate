@@ -30,55 +30,6 @@
         <section class="grid" id="daysGrid" role="feed" aria-label="날짜 그리드"></section>
     </div>
 
-    <!--스케줄 추가 modal -->
-    <div class="modal fade" id="popup_addSchedule" tabindex="-1" aria-labelledby="addScheduleLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="addScheduleLabel">새로운 스케줄 추가하기</h1>
-                </div>
-                <div class="modal-body">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control mb-3" id="scheduleTitle" placeholder="일정명을 입력하세요" value="" name="scheduleTitle" required>
-                        <label for="scheduleTitle">일정명</label>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md">
-                            <div class="form-floating">
-                                <input type="date" class="form-control" id="schStrDate" value="" name="schStrDate" required>
-                                <label for="schStrDate">일정 시작일</label>
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <div class="form-floating">
-                                <input type="date" class="form-control" id="schEndDate" value="" name="schEndDate" required>
-                                <label for="schEndDate">일정 종료일</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <select class="form-select" id="scheduleCategory" aria-label="scheduleCategory" name="scheduleCategory" required>
-                            <option value="0" selected>일정 종류를 선택해주세요</option>
-                        </select>
-                        <label for="scheduleCategory">일정종류</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="number" class="form-control mb-3" id="schedulePayment" placeholder="수익금을 입력하세요" name="schedulePayment" step="1000" required>
-                        <label for="schedulePayment">수익금</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <textarea class="form-control mb-3" id="scheduleMemo" placeholder="일정 상세내용을 입력하세요" name="scheduleMemo" style="height: 100px" rows="4"></textarea>
-                        <label for="scheduleMemo">일정 상세</label>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                        <button type="button" class="btn primary" id="addSchedule">신규 저장</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="contract" aria-label="계약">
         <div class="cal-header">
             <div class="container">
@@ -103,59 +54,163 @@
 
         <div id="contractList"></div>
 
-        <!--계약 추가 modal -->
-        <div class="modal fade" id="popup_addContract" tabindex="-1" aria-labelledby="addContractLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="addContractLabel">새로운 계약 추가하기</h1>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control mb-3" id="contractTitle" placeholder="계약명을 입력하세요" value="" name="contractTitle" required>
-                            <label for="contractTitle">계약명</label>
-                        </div>
-                        <div class="row g-2 mb-3">
-                            <div class="col-md">
-                                <div class="form-floating">
-                                    <input type="date" class="form-control" id="strDate" value="" name="strDate" required>
-                                    <label for="strDate">계약 시작일</label>
-                                </div>
-                            </div>
-                            <div class="col-md">
-                                <div class="form-floating">
-                                    <input type="date" class="form-control" id="endDate" value="" name="endDate" required>
-                                    <label for="endDate">계약 종료일</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <select class="form-select" id="contractCategory" aria-label="contractCategory" name="contractCategory" required>
-                                <option value="0" selected>계약 종류를 선택해주세요</option>
-                                <option value="브랜드 블로그">브랜드 블로그</option>
-                                <option value="플레이스 관리">플레이스 관리</option>
-                                <option value="기타">기타</option>
-                            </select>
-                            <label for="contractCategory">계약종류</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="number" class="form-control mb-3" id="contractPayment" placeholder="계약금을 입력하세요" value="" name="contractPayment" step="1000" required>
-                            <label for="contractPayment">요금</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control mb-3" id="contractChannel" placeholder="계약을 수주한 경로를 입력하세요" value="" name="contractChannel" required>
-                            <label for="contractChannel">계약 수주 경로</label>
+    </div>
+</main>
+
+<!--계약 추가 modal -->
+<div class="modal fade" id="popup_addContract" tabindex="-1" aria-labelledby="addContractLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addContractLabel">새로운 계약 추가하기</h1>
+            </div>
+            <div class="modal-body">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control mb-3" id="contractTitle" placeholder="계약명을 입력하세요" value="" name="contractTitle" required>
+                    <label for="contractTitle">계약명</label>
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col-md">
+                        <div class="form-floating">
+                            <input type="date" class="form-control" id="strDate" value="" name="strDate" required>
+                            <label for="strDate">계약 시작일</label>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                        <button type="button" class="btn primary" id="addContract">신규 저장</button>
+                    <div class="col-md">
+                        <div class="form-floating">
+                            <input type="date" class="form-control" id="endDate" value="" name="endDate" required>
+                            <label for="endDate">계약 종료일</label>
+                        </div>
                     </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="contractCategory" aria-label="contractCategory" name="contractCategory" required>
+                        <option value="0" selected>계약 종류를 선택해주세요</option>
+                        <option value="브랜드 블로그">브랜드 블로그</option>
+                        <option value="플레이스 관리">플레이스 관리</option>
+                        <option value="기타">기타</option>
+                    </select>
+                    <label for="contractCategory">계약종류</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control mb-3" id="contractPayment" placeholder="계약금을 입력하세요" value="" name="contractPayment" step="1000" required>
+                    <label for="contractPayment">요금</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control mb-3" id="contractChannel" placeholder="계약을 수주한 경로를 입력하세요" value="" name="contractChannel" required>
+                    <label for="contractChannel">계약 수주 경로</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn primary" id="addContract">신규 저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--일정 추가 modal -->
+<div class="modal fade" id="popup_addSchedule" tabindex="-1" aria-labelledby="addScheduleLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addScheduleLabel">새로운 일정 추가하기</h1>
+            </div>
+            <div class="modal-body">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control mb-3" id="scheduleTitle" placeholder="일정명을 입력하세요" value="" name="scheduleTitle" required>
+                    <label for="scheduleTitle">일정명</label>
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col-md">
+                        <div class="form-floating">
+                            <input type="date" class="form-control" id="schStrDate" value="" name="schStrDate" required>
+                            <label for="schStrDate">일정 시작일</label>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="form-floating">
+                            <input type="date" class="form-control" id="schEndDate" value="" name="schEndDate" required>
+                            <label for="schEndDate">일정 종료일</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="scheduleCategory" aria-label="scheduleCategory" name="scheduleCategory" required>
+                        <option value="0" selected>일정 종류를 선택해주세요</option>
+                    </select>
+                    <label for="scheduleCategory">일정종류</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control mb-3" id="schedulePayment" placeholder="수익금을 입력하세요" name="schedulePayment" step="1000" required>
+                    <label for="schedulePayment">수익금</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <textarea class="form-control mb-3" id="scheduleMemo" placeholder="일정 상세내용을 입력하세요" name="scheduleMemo" style="height: 100px" rows="4"></textarea>
+                    <label for="scheduleMemo">일정 상세</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button type="button" class="btn primary" id="addSchedule">신규 저장</button>
                 </div>
             </div>
         </div>
     </div>
-</main>
+</div>
+
+<!-- 일정 상세보기/수정 modal -->
+<div class="modal fade" id="popup_scheduleDetail" tabindex="-1" aria-labelledby="scheduleDetailLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="scheduleDetailLabel">일정 상세</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="detailScheduleNo" value="">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="detailScheduleTitle" placeholder="일정명" disabled>
+                    <label for="detailScheduleTitle">일정명</label>
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col-md">
+                        <div class="form-floating">
+                            <input type="date" class="form-control" id="detailSchStrDate" disabled>
+                            <label for="detailSchStrDate">일정 시작일</label>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="form-floating">
+                            <input type="date" class="form-control" id="detailSchEndDate" disabled>
+                            <label for="detailSchEndDate">일정 종료일</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="detailScheduleCategory" disabled>
+                        <option value="0" selected>일정 종류를 선택해주세요</option>
+                    </select>
+                    <label for="detailScheduleCategory">일정종류</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="detailSchedulePayment" placeholder="수익금" step="1000" disabled>
+                    <label for="detailSchedulePayment">수익금</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <textarea class="form-control" id="detailScheduleMemo" placeholder="일정 상세내용" style="height: 100px" rows="4" disabled></textarea>
+                    <label for="detailScheduleMemo">일정 상세</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="deleteScheduleBtn">삭제</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-warning" id="editScheduleBtn">수정</button>
+                <button type="button" class="btn primary" id="saveScheduleBtn" style="display:none;">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
     // ----- Utility: Korean labels -----
@@ -235,6 +290,10 @@
         const totalCells = 35;
         const cells = [];
 
+        // 일정별로 행 번호를 추적하는 맵
+        const scheduleRowMap = new Map(); // key: SCH_NO, value: row index
+        let nextAvailableRow = 0;
+
         for (let i = 0; i < totalCells; i++) {
             const cell = document.createElement('div');
             cell.type = 'button';
@@ -276,9 +335,25 @@
                 const scheduleContainer = document.createElement('div');
                 scheduleContainer.className = 'schedule-indicators';
 
+                // 일정을 행 번호로 정렬
+                const schedulesWithRow = daySchedules.map(schedule => {
+                    // 이미 할당된 행이 있으면 사용, 없으면 새 행 할당
+                    if (!scheduleRowMap.has(schedule.SCH_NO)) {
+                        scheduleRowMap.set(schedule.SCH_NO, nextAvailableRow++);
+                    }
+                    return {
+                        schedule,
+                        row: scheduleRowMap.get(schedule.SCH_NO)
+                    };
+                });
+
+                // 행 번호로 정렬
+                schedulesWithRow.sort((a, b) => a.row - b.row);
+
                 // 최대 3개까지만 표시 (더 많으면 +N 표시)
                 const maxDisplay = 3;
-                daySchedules.slice(0, maxDisplay).forEach(schedule => {
+                schedulesWithRow.slice(0, maxDisplay).forEach(item => {
+                    const schedule = item.schedule;
                     const indicator = document.createElement('div');
                     indicator.className = 'schedule-indicator';
                     indicator.textContent = schedule.SCH_TITLE;
@@ -294,6 +369,13 @@
                     indicator.style.padding = '2px 4px';
                     indicator.style.borderRadius = '3px';
                     indicator.style.marginTop = '2px';
+                    indicator.style.cursor = 'pointer';
+
+                    // 일정 클릭 이벤트
+                    indicator.addEventListener('click', (e) => {
+                        e.stopPropagation(); // 셀 클릭 이벤트 방지
+                        showScheduleDetail(schedule);
+                    });
 
                     scheduleContainer.appendChild(indicator);
                 });
@@ -306,6 +388,77 @@
                     moreIndicator.style.fontSize = '9px';
                     moreIndicator.style.color = '#94a3b8';
                     moreIndicator.style.marginTop = '2px';
+                    moreIndicator.style.cursor = 'pointer';
+                    moreIndicator.style.position = 'relative';
+
+                    // 숨겨진 일정들을 담을 툴팁 컨테이너
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'schedule-tooltip';
+                    tooltip.style.display = 'none';
+                    tooltip.style.position = 'fixed';
+                    tooltip.style.backgroundColor = '#1e293b';
+                    tooltip.style.border = '1px solid #475569';
+                    tooltip.style.borderRadius = '6px';
+                    tooltip.style.padding = '8px';
+                    tooltip.style.zIndex = '9999';
+                    tooltip.style.minWidth = '150px';
+                    tooltip.style.maxWidth = '250px';
+                    tooltip.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.3)';
+
+                    // 숨겨진 일정들 추가
+                    schedulesWithRow.slice(maxDisplay).forEach(item => {
+                        const schedule = item.schedule;
+                        const tooltipItem = document.createElement('div');
+                        tooltipItem.style.fontSize = '11px';
+                        tooltipItem.style.padding = '4px';
+                        tooltipItem.style.marginBottom = '4px';
+                        tooltipItem.style.backgroundColor = schedule.STATE_COLOR;
+                        tooltipItem.style.color = '#1e293b';
+                        tooltipItem.style.borderRadius = '3px';
+                        tooltipItem.style.whiteSpace = 'nowrap';
+                        tooltipItem.textContent = schedule.SCH_TITLE;
+                        tooltipItem.title = `${schedule.SCH_TITLE} (${schedule.SCH_ST_DATE} ~ ${schedule.SCH_ED_DATE})`;
+                        tooltip.appendChild(tooltipItem);
+                    });
+
+                    // 툴팁을 body에 직접 추가
+                    document.body.appendChild(tooltip);
+
+                    let hideTimeout = null;
+
+                    // 툴팁 위치 계산 및 표시 함수
+                    const showTooltip = (e) => {
+                        if (hideTimeout) {
+                            clearTimeout(hideTimeout);
+                            hideTimeout = null;
+                        }
+                        const rect = moreIndicator.getBoundingClientRect();
+                        tooltip.style.left = rect.left + 'px';
+                        tooltip.style.top = (rect.bottom + 4) + 'px';
+                        tooltip.style.display = 'block';
+                    };
+
+                    const hideTooltip = () => {
+                        hideTimeout = setTimeout(() => {
+                            tooltip.style.display = 'none';
+                        }, 200);
+                    };
+
+                    // 마우스 오버 이벤트
+                    moreIndicator.addEventListener('mouseenter', showTooltip);
+                    moreIndicator.addEventListener('mouseleave', hideTooltip);
+
+                    // 툴팁 자체의 이벤트
+                    tooltip.addEventListener('mouseenter', () => {
+                        if (hideTimeout) {
+                            clearTimeout(hideTimeout);
+                            hideTimeout = null;
+                        }
+                        tooltip.style.display = 'block';
+                    });
+
+                    tooltip.addEventListener('mouseleave', hideTooltip);
+
                     scheduleContainer.appendChild(moreIndicator);
                 }
 
@@ -484,7 +637,98 @@
             }
         });
 
+        // 일정 수정 버튼 클릭
+        $("#editScheduleBtn").on("click", function() {
+            enableScheduleDetailInputs();
+            $(this).hide();
+            $("#saveScheduleBtn").show();
+        });
 
+        // 일정 저장 버튼 클릭 (수정 저장)
+        $("#saveScheduleBtn").on("click", function() {
+            const scheduleNo        = $("#detailScheduleNo").val();
+            const scheduleTitle     = $("#detailScheduleTitle");
+            const schStrDate        = $("#detailSchStrDate");
+            const schEndDate        = $("#detailSchEndDate");
+            const scheduleCategory  = $("#detailScheduleCategory");
+            const schedulePayment   = $("#detailSchedulePayment");
+            const scheduleMemo      = $("#detailScheduleMemo");
+
+            if(scheduleTitle.val() === ""){
+                alert("일정명을 입력하세요.");
+                scheduleTitle.focus();
+            }else if(schStrDate.val() === ""){
+                alert("시작일을 입력하세요.");
+                schStrDate.focus();
+            }else if(schEndDate.val() === ""){
+                alert("종료일을 입력하세요.");
+                schEndDate.focus();
+            }else if(schStrDate.val() > schEndDate.val()){
+                alert("종료일은 시작일 이후여야 합니다.");
+                schEndDate.focus();
+            }else if(scheduleCategory.val() === "0"){
+                alert("일정종류를 선택하세요.");
+                scheduleCategory.focus();
+            }else if(schedulePayment.val() === ""){
+                alert("수익금을 입력하세요.");
+                schedulePayment.focus();
+            }else{
+                const formData = {
+                    scheduleNo          : scheduleNo,
+                    scheduleTitle       : scheduleTitle.val(),
+                    schStrDate          : schStrDate.val(),
+                    schEndDate          : schEndDate.val(),
+                    scheduleCategory    : scheduleCategory.val(),
+                    schedulePayment     : schedulePayment.val(),
+                    scheduleMemo        : scheduleMemo.val()
+                };
+                $.ajax({
+                    type: "PUT",
+                    url: "/updateSchedule",
+                    contentType: "application/json; charset=UTF-8",
+                    accept: "application/json",
+                    data: JSON.stringify(formData),
+                    processData: false,
+                    success: function(response) {
+                        alert("일정 수정완료");
+                        bootstrap.Modal.getInstance(document.getElementById('popup_scheduleDetail')).hide();
+                        searchSchedule(current.getFullYear(), current.getMonth());
+                    },
+                    error: function(xhr) {
+                        console.log("status:", xhr.status);
+                        console.log("response:", xhr.responseText);
+                        alert("수정 중 오류가 발생했습니다.");
+                    }
+                });
+            }
+        });
+
+        // 일정 삭제 버튼 클릭
+        $("#deleteScheduleBtn").on("click", function() {
+            if(!confirm('정말 이 일정을 삭제하시겠습니까?')) {
+                return;
+            }
+
+            const scheduleNo = $("#detailScheduleNo").val();
+
+            $.ajax({
+                url: "/deleteSchedule",
+                type: "DELETE",
+                data: {
+                    scheduleNo: scheduleNo
+                },
+                success: function(response) {
+                    alert("삭제되었습니다.");
+                    bootstrap.Modal.getInstance(document.getElementById('popup_scheduleDetail')).hide();
+                    searchSchedule(current.getFullYear(), current.getMonth());
+                },
+                error: function(xhr) {
+                    console.log("status:", xhr.status);
+                    console.log("response:", xhr.responseText);
+                    alert("삭제 중 오류가 발생했습니다.");
+                }
+            });
+        });
     });
 
     //검색창에 enter키 입력시 바로 검색
@@ -501,6 +745,60 @@
     });
 
     //사용되는 함수
+    function showScheduleDetail(schedule) {
+        // hidden input에 일정 번호 저장
+        document.getElementById('detailScheduleNo').value = schedule.SCH_NO;
+
+        // 모달에 데이터 채우기
+        document.getElementById('detailScheduleTitle').value = schedule.SCH_TITLE;
+        document.getElementById('detailSchStrDate').value = schedule.SCH_ST_DATE;
+        document.getElementById('detailSchEndDate').value = schedule.SCH_ED_DATE;
+        document.getElementById('detailScheduleCategory').value = schedule.CATE_NO;
+        document.getElementById('detailSchedulePayment').value = schedule.PAYMENT;
+        document.getElementById('detailScheduleMemo').value = schedule.SCH_MEMO || '';
+
+        // 카테고리 셀렉트박스 옵션 로드 (이미 로드되어 있지 않은 경우)
+        const categorySelect = document.getElementById('detailScheduleCategory');
+        if (categorySelect.options.length <= 1) {
+            // scheduleCategory의 옵션을 복사
+            const sourceSelect = document.getElementById('scheduleCategory');
+            for (let i = 1; i < sourceSelect.options.length; i++) {
+                const option = sourceSelect.options[i].cloneNode(true);
+                categorySelect.appendChild(option);
+            }
+        }
+        categorySelect.value = schedule.CATE_NO;
+
+        // 모든 입력 필드 비활성화
+        disableScheduleDetailInputs();
+
+        // 수정 버튼 보이기, 저장 버튼 숨기기
+        document.getElementById('editScheduleBtn').style.display = 'inline-block';
+        document.getElementById('saveScheduleBtn').style.display = 'none';
+
+        // 모달 열기
+        const modal = new bootstrap.Modal(document.getElementById('popup_scheduleDetail'));
+        modal.show();
+    }
+
+    function disableScheduleDetailInputs() {
+        document.getElementById('detailScheduleTitle').disabled = true;
+        document.getElementById('detailSchStrDate').disabled = true;
+        document.getElementById('detailSchEndDate').disabled = true;
+        document.getElementById('detailScheduleCategory').disabled = true;
+        document.getElementById('detailSchedulePayment').disabled = true;
+        document.getElementById('detailScheduleMemo').disabled = true;
+    }
+
+    function enableScheduleDetailInputs() {
+        document.getElementById('detailScheduleTitle').disabled = false;
+        document.getElementById('detailSchStrDate').disabled = false;
+        document.getElementById('detailSchEndDate').disabled = false;
+        document.getElementById('detailScheduleCategory').disabled = false;
+        document.getElementById('detailSchedulePayment').disabled = false;
+        document.getElementById('detailScheduleMemo').disabled = false;
+    }
+
     function searchContract() {
         $("#contractList").html('');
         $.ajax({
