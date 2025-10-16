@@ -48,4 +48,13 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     """, nativeQuery = true)
     List<Map<String, Object>> searchContractAll(@Param("conTitle") String conTitle);
 
+    @Query(value = """
+    SELECT COALESCE(SUM(PAYMENT), 0) as TOTAL_PAYMENT
+    FROM TBL_CONTRACT
+    WHERE YEAR(CON_ST_DATE) = :year AND MONTH(CON_ST_DATE) = :month
+    """, nativeQuery = true)
+    Map<String, Object> getMonthlyContractPaymentSum(
+            @Param("year") int year,
+            @Param("month") int month
+    );
 }

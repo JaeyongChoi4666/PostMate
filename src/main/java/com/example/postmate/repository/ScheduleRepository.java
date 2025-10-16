@@ -105,4 +105,17 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
     """, nativeQuery = true)
     void deleteSchedule(@Param("schNo") Long schNo);
 
+    @Query(value = """
+    SELECT COALESCE(SUM(PAYMENT), 0) as TOTAL_PAYMENT
+    FROM TBL_SCHEDULE
+    WHERE (YEAR(SCH_ST_DATE) = :year AND MONTH(SCH_ST_DATE) = :month)
+       OR (YEAR(SCH_ED_DATE) = :year AND MONTH(SCH_ED_DATE) = :month)
+       OR (SCH_ST_DATE <= :firstDay AND SCH_ED_DATE >= :lastDay)
+    """, nativeQuery = true)
+    Map<String, Object> getMonthlyPaymentSum(
+            @Param("year") int year,
+            @Param("month") int month,
+            @Param("firstDay") String firstDay,
+            @Param("lastDay") String lastDay
+    );
 }

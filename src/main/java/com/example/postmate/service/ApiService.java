@@ -92,4 +92,37 @@ public class ApiService {
         scheduleRepository.deleteSchedule(schNo);
     }
 
+    public Map<String, Object> getMonthlyPaymentSum(int year, int month) {
+        // 해당 월의 첫날과 마지막 날 계산
+        String firstDay = String.format("%d-%02d-01", year, month);
+
+        // 마지막 날 계산
+        int lastDayOfMonth;
+        if (month == 12) {
+            lastDayOfMonth = 31;
+        } else {
+            // 다음 달 1일에서 하루 뺀 날짜의 일자
+            java.time.LocalDate nextMonth = java.time.LocalDate.of(year, month, 1).plusMonths(1);
+            lastDayOfMonth = nextMonth.minusDays(1).getDayOfMonth();
+        }
+        String lastDay = String.format("%d-%02d-%02d", year, month, lastDayOfMonth);
+
+        // 일정 수익금 합계
+        Map<String, Object> scheduleSum = scheduleRepository.getMonthlyPaymentSum(year, month, firstDay, lastDay);
+        long schedulePayment = ((Number) scheduleSum.get("TOTAL_PAYMENT")).longValue();
+
+        // 계약 수익금 합계 (계약 시작일이 해당 월인 것만)
+        Map<String, Object> contractSum = contractRepository.getMonthlyContractPaymentSum(year, month);
+        long contractPayment = ((Number) contractSum.get("TOTAL_PAYMENT")).longValue();
+
+        // 합산
+        long totalPayment = schedulePayment + contractPayment;
+
+        Map<String, Object> result = new java.util.HashMap<>();
+        result.put("TOTAL_PAYMENT", totalPayment);
+        result.put("SCHEDULE_PAYMENT", schedulePayment);
+        result.put("CONTRACT_PAYMENT", contractPayment);
+
+        return result;
+    }
 }

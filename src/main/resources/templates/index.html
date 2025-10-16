@@ -10,6 +10,19 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
+
+<!-- Toast 컨테이너 -->
+<div class="toast-container position-fixed top-50 start-50 translate-middle p-3" style="z-index: 11000">
+    <div id="alertToast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage">
+                메시지
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
 <main class="container d-flex">
     <div class="calendar" aria-label="달력">
         <div class="cal-header">
@@ -210,8 +223,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" id="deleteScheduleBtn">삭제</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                <button type="button" class="btn btn-warning" id="editScheduleBtn">수정</button>
-                <button type="button" class="btn primary" id="saveScheduleBtn" style="display:none;">저장</button>
+                <button type="button" class="btn primary" id="saveScheduleBtn">저장</button>
             </div>
         </div>
     </div>
@@ -224,6 +236,25 @@
         '1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'
     ];
     const DOW = ['일','월','화','수','목','금','토']; // 일요일 시작
+
+    // Custom Alert 함수
+    function showAlert(message, type = 'primary') {
+        const toastEl = document.getElementById('alertToast');
+        const toastBody = document.getElementById('toastMessage');
+
+        // 메시지 설정
+        toastBody.textContent = message;
+
+        // 타입별 색상 변경
+        toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+
+        // Toast 표시
+        const toast = new bootstrap.Toast(toastEl, {
+            autohide: true,
+            delay: 500
+        });
+        toast.show();
+    }
 
     const monthLabel = document.getElementById('monthLabel');
     const yearLabel  = document.getElementById('yearLabel');
@@ -545,25 +576,25 @@
             const contractChannel   = $("#contractChannel");
 
             if(contractTitle.val() === ""){
-                alert("계약명을 입력하세요.");
+                showAlert("계약명을 입력하세요", "warning");
                 contractTitle.focus();
             }else if(strDate.val() === ""){
-                alert("시작일을 입력하세요.");
+                showAlert("시작일을 입력하세요", "warning");
                 strDate.focus();
             }else if(endDate.val() === ""){
-                alert("종료일을 입력하세요.");
+                showAlert("종료일을 입력하세요", "warning");
                 endDate.focus();
             }else if(strDate.val() > endDate.val()){
-                alert("종료일은 시작일 이후여야 합니다.");
+                showAlert("종료일은 시작일 이후여야 합니다", "warning");
                 endDate.focus();
             }else if(contractCategory.val() === "0"){
-                alert("계약종류를 선택하세요.");
+                showAlert("계약종류를 선택하세요", "warning");
                 contractCategory.focus();
             }else if(contractPayment.val() === ""){
-                alert("요금을 입력하세요.");
+                showAlert("요금을 입력하세요", "warning");
                 contractPayment.focus();
             }else if(contractChannel.val() === ""){
-                alert("계약 수주 경로를 입력하세요.");
+                showAlert("계약 수주 경로를 입력하세요", "warning");
                 contractChannel.focus();
             }else{
                 const formData = {
@@ -582,12 +613,13 @@
                     data: JSON.stringify(formData),
                     processData: false,
                     success: function(response) {
-                        alert("계약 저장완료")
+                        showAlert("계약 저장완료", "success");
                         location.reload();
                     },
                     error: function(xhr) {
                         console.log("status:", xhr.status);
                         console.log("response:", xhr.responseText);
+                        showAlert("저장 중 오류가 발생했습니다", "danger");
                     }
                 })
             }
@@ -608,22 +640,22 @@
             const scheduleMemo      = $("#scheduleMemo");
 
             if(scheduleTitle.val() === ""){
-                alert("일정명을 입력하세요.");
+                showAlert("일정명을 입력하세요", "warning");
                 scheduleTitle.focus();
             }else if(schStrDate.val() === ""){
-                alert("시작일을 입력하세요.");
+                showAlert("시작일을 입력하세요", "warning");
                 schStrDate.focus();
             }else if(schEndDate.val() === ""){
-                alert("종료일을 입력하세요.");
+                showAlert("종료일을 입력하세요", "warning");
                 schEndDate.focus();
             }else if(schStrDate.val() > schEndDate.val()){
-                alert("종료일은 시작일 이후여야 합니다.");
+                showAlert("종료일은 시작일 이후여야 합니다", "warning");
                 schEndDate.focus();
             }else if(scheduleCategory.val() === "0"){
-                alert("일정종류를 선택하세요.");
+                showAlert("일정종류를 선택하세요", "warning");
                 scheduleCategory.focus();
             }else if(schedulePayment.val() === ""){
-                alert("수익금을 입력하세요.");
+                showAlert("수익금을 입력하세요", "warning");
                 schedulePayment.focus();
             }else{
                 const formData = {
@@ -642,22 +674,16 @@
                     data: JSON.stringify(formData),
                     processData: false,
                     success: function(response) {
-                        alert("일정 저장완료")
+                        showAlert("일정 저장완료", "success");
                         location.reload();
                     },
                     error: function(xhr) {
                         console.log("status:", xhr.status);
                         console.log("response:", xhr.responseText);
+                        showAlert("저장 중 오류가 발생했습니다", "danger");
                     }
                 })
             }
-        });
-
-        // 일정 수정 버튼 클릭
-        $("#editScheduleBtn").on("click", function() {
-            enableScheduleDetailInputs();
-            $(this).hide();
-            $("#saveScheduleBtn").show();
         });
 
         // 일정 저장 버튼 클릭 (수정 저장)
@@ -672,25 +698,25 @@
             const scheduleMemo      = $("#detailScheduleMemo");
 
             if(scheduleTitle.val() === ""){
-                alert("일정명을 입력하세요.");
+                showAlert("일정명을 입력하세요", "warning");
                 scheduleTitle.focus();
             }else if(schStrDate.val() === ""){
-                alert("시작일을 입력하세요.");
+                showAlert("시작일을 입력하세요", "warning");
                 schStrDate.focus();
             }else if(schEndDate.val() === ""){
-                alert("종료일을 입력하세요.");
+                showAlert("종료일을 입력하세요", "warning");
                 schEndDate.focus();
             }else if(schStrDate.val() > schEndDate.val()){
-                alert("종료일은 시작일 이후여야 합니다.");
+                showAlert("종료일은 시작일 이후여야 합니다", "warning");
                 schEndDate.focus();
             }else if(scheduleCategory.val() === "0"){
-                alert("일정종류를 선택하세요.");
+                showAlert("일정종류를 선택하세요", "warning");
                 scheduleCategory.focus();
             }else if(scheduleState.val() === "0"){
-                alert("일정상태를 선택하세요.");
+                showAlert("일정상태를 선택하세요", "warning");
                 scheduleState.focus();
             }else if(schedulePayment.val() === ""){
-                alert("수익금을 입력하세요.");
+                showAlert("수익금을 입력하세요", "warning");
                 schedulePayment.focus();
             }else{
                 const formData = {
@@ -711,14 +737,14 @@
                     data: JSON.stringify(formData),
                     processData: false,
                     success: function(response) {
-                        alert("일정 수정완료");
+                        showAlert("일정 수정완료", "success");
                         bootstrap.Modal.getInstance(document.getElementById('popup_scheduleDetail')).hide();
                         searchSchedule(current.getFullYear(), current.getMonth());
                     },
                     error: function(xhr) {
                         console.log("status:", xhr.status);
                         console.log("response:", xhr.responseText);
-                        alert("수정 중 오류가 발생했습니다.");
+                        showAlert("수정 중 오류가 발생했습니다", "danger");
                     }
                 });
             }
@@ -739,14 +765,14 @@
                     scheduleNo: scheduleNo
                 },
                 success: function(response) {
-                    alert("삭제되었습니다.");
+                    showAlert("삭제되었습니다", "success");
                     bootstrap.Modal.getInstance(document.getElementById('popup_scheduleDetail')).hide();
                     searchSchedule(current.getFullYear(), current.getMonth());
                 },
                 error: function(xhr) {
                     console.log("status:", xhr.status);
                     console.log("response:", xhr.responseText);
-                    alert("삭제 중 오류가 발생했습니다.");
+                    showAlert("삭제 중 오류가 발생했습니다", "danger");
                 }
             });
         });
@@ -787,10 +813,8 @@
         document.getElementById('detailSchStrDate').value = schedule.SCH_ST_DATE;
         document.getElementById('detailSchEndDate').value = schedule.SCH_ED_DATE;
         document.getElementById('detailScheduleCategory').value = schedule.CATE_NO;
-        document.getElementById('detailScheduleState').value = schedule.SCH_STATE;
         document.getElementById('detailSchedulePayment').value = schedule.PAYMENT;
         document.getElementById('detailScheduleMemo').value = schedule.SCH_MEMO || '';
-
 
         // 카테고리 셀렉트박스 옵션 로드 (이미 로드되어 있지 않은 경우)
         const categorySelect = document.getElementById('detailScheduleCategory');
@@ -802,17 +826,13 @@
                 categorySelect.appendChild(option);
             }
         }
-        categorySelect.value = schedule.SCH_CATEGORY;
+        categorySelect.value = schedule.CATE_NO;
 
         // 해당 카테고리의 상태 목록 로드
         loadScheduleStateByCate(schedule.CATE_NO, schedule.SCH_STATE);
 
-        // 모든 입력 필드 비활성화
-        disableScheduleDetailInputs();
-
-        // 수정 버튼 보이기, 저장 버튼 숨기기
-        document.getElementById('editScheduleBtn').style.display = 'inline-block';
-        document.getElementById('saveScheduleBtn').style.display = 'none';
+        // 모든 입력 필드 활성화
+        enableScheduleDetailInputs();
 
         // 모달 열기
         const modal = new bootstrap.Modal(document.getElementById('popup_scheduleDetail'));
@@ -898,13 +918,13 @@
                 conId: conId
             },
             success: function(response) {
-                alert("삭제되었습니다.");
+                showAlert("삭제되었습니다", "success");
                 searchContract(); // 목록 새로고침
             },
             error: function(xhr) {
                 console.log("status:", xhr.status);
                 console.log("response:", xhr.responseText);
-                alert("삭제 중 오류가 발생했습니다.");
+                showAlert("삭제 중 오류가 발생했습니다", "danger");
             }
         });
     }
@@ -994,10 +1014,31 @@
             error: function(xhr) {
                 console.log("status:", xhr.status);
                 console.log("response:", xhr.responseText);
-                alert("삭제 중 오류가 발생했습니다.");
+                showAlert("삭제 중 오류가 발생했습니다", "danger");
             }
         });
 
+        // 월별 수익금 합계 조회
+        updateMonthlyPayment(year, month + 1);
+    }
+
+    function updateMonthlyPayment(year, month) {
+        $.ajax({
+            url: "/getMonthlyPaymentSum",
+            type: "GET",
+            data: {
+                year: year,
+                month: month
+            },
+            success: function(response) {
+                const totalPayment = response.TOTAL_PAYMENT || 0;
+                $("#payment").text(addCommas(totalPayment));
+            },
+            error: function(xhr) {
+                console.log("status:", xhr.status);
+                console.log("response:", xhr.responseText);
+            }
+        });
     }
 
     // Init

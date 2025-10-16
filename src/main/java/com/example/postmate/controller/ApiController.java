@@ -110,4 +110,9 @@ public class ApiController {
         }
     }
 
+    //월별 수익금 합계
+    @GetMapping(value = "/getMonthlyPaymentSum")
+    public ResponseEntity<?> getMonthlyPaymentSum(@RequestParam int year, @RequestParam int month) {
+        return ResponseEntity.ok(apiService.getMonthlyPaymentSum(year, month));
+    }
 }
