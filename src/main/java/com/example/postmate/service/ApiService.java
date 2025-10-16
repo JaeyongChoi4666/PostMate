@@ -46,6 +46,10 @@ public class ApiService {
         return scheduleRepository.loadScheduleCategory();
     }
 
+    public List<Map<String, Object>> loadScheduleStateByCate(String cateNo){
+        return scheduleRepository.loadScheduleStateByCate(cateNo);
+    }
+
     public int addSchedule(ScheduleRequest request) {
         String schState = switch (request.getScheduleCategory()) {
             case "1" -> "10";
@@ -70,4 +74,22 @@ public class ApiService {
     public List<Map<String, Object>> searchSchedule(String schStrDate,String schEndDate){
         return scheduleRepository.searchSchedule(schStrDate,schEndDate);
     }
+
+    public int updateSchedule(ScheduleRequest request) {
+        return scheduleRepository.updateSchedule(
+                request.getScheduleNo(),
+                request.getScheduleTitle(),
+                request.getSchStrDate().toString(),
+                request.getSchEndDate().toString(),
+                request.getScheduleCategory(),
+                request.getScheduleState(),
+                request.getSchedulePayment(),
+                request.getScheduleMemo()
+        );
+    }
+
+    public void deleteSchedule(Long schNo) {
+        scheduleRepository.deleteSchedule(schNo);
+    }
+
 }

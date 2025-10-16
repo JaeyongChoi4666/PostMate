@@ -9,17 +9,13 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class ScheduleRequest {
-
+    private Long scheduleNo;
     private String scheduleTitle;
-
     private LocalDate schStrDate;
-
     private LocalDate schEndDate;
-
     private String scheduleCategory;
-
-    private BigDecimal schedulePayment; // 금액은 BigDecimal 권장
-
+    private String scheduleState;
+    private BigDecimal schedulePayment;
     private String scheduleMemo;
 
 }

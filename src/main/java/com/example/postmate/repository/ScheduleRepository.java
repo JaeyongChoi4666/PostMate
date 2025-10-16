@@ -22,6 +22,15 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
     """, nativeQuery = true)
     List<Map<String, Object>> loadScheduleCategory();
 
+    @Query(value = """
+    SELECT *
+    FROM TBL_STATE
+    WHERE UPPER_CATE_NO = :cateNo
+    ORDER BY STATE_NO
+    """, nativeQuery = true)
+    List<Map<String, Object>> loadScheduleStateByCate(@Param("cateNo") String cateNo);
+
+
     @Modifying
     @Transactional
     @Query(value = """
@@ -49,6 +58,7 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
         SC.SCH_STATE,
         SC.PAYMENT,
         SC.SCH_MEMO,
+        CA.CATE_NO,
         CA.CATE_NAME,
         ST.STATE_NAME,
         ST.STATE_COLOR
@@ -62,4 +72,37 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
         @Param("schStrDate") String schStrDate,
         @Param("schEndDate") String schEndDate
     );
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+    UPDATE TBL_SCHEDULE
+    SET SCH_TITLE = :schTitle,
+        SCH_ST_DATE = :schStDate,
+        SCH_ED_DATE = :schEdDate,
+        SCH_CATEGORY = :schCategory,
+        SCH_STATE = :schState,
+        PAYMENT = :payment,
+        SCH_MEMO = :schMemo
+    WHERE SCH_NO = :schNo
+    """, nativeQuery = true)
+    Integer updateSchedule(
+            @Param("schNo") Long schNo,
+            @Param("schTitle") String schTitle,
+            @Param("schStDate") String schStDate,
+            @Param("schEdDate") String schEdDate,
+            @Param("schCategory") String schCategory,
+            @Param("schState") String schState,
+            @Param("payment") BigDecimal payment,
+            @Param("schMemo") String schMemo
+    );
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+    DELETE FROM TBL_SCHEDULE
+    WHERE SCH_NO = :schNo
+    """, nativeQuery = true)
+    void deleteSchedule(@Param("schNo") Long schNo);
+
 }

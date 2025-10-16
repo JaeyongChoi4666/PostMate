@@ -58,6 +58,13 @@ public class ApiController {
         return ResponseEntity.ok(apiService.loadScheduleCategory());
     }
 
+    //카테고리별 일정상태 불러오기
+    @GetMapping(value = "/loadScheduleStateByCate")
+    public ResponseEntity<?> loadScheduleStateByCate(@RequestParam String cateNo) {
+        return ResponseEntity.ok(apiService.loadScheduleStateByCate(cateNo));
+    }
+
+
     //일정추가
     @PostMapping(value = "/addSchedule")
     public ResponseEntity<Integer> addSchedule(@RequestBody ScheduleRequest request) {
@@ -77,4 +84,30 @@ public class ApiController {
     public ResponseEntity<?> searchSchedule(@RequestParam String schStrDate,@RequestParam String schEndDate) {
         return ResponseEntity.ok(apiService.searchSchedule(schStrDate,schEndDate));
     }
+
+    //일정수정
+    @PutMapping(value = "/updateSchedule")
+    public ResponseEntity<Integer> updateSchedule(@RequestBody ScheduleRequest request) {
+        log.info("PUT /updateSchedule called. payload={}", request);
+        try {
+            int result = apiService.updateSchedule(request);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("updateSchedule failed", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    //일정삭제
+    @DeleteMapping(value = "/deleteSchedule")
+    public ResponseEntity<?> deleteSchedule(@RequestParam Long scheduleNo) {
+        try {
+            apiService.deleteSchedule(scheduleNo);
+            return ResponseEntity.ok("삭제 완료");
+        } catch (Exception e) {
+            log.error("deleteSchedule failed", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제 실패: " + e.getMessage());
+        }
+    }
+
 }
