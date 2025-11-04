@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "tbl_contract")
+@Table(name = "TBL_CONTRACT")
 @Data
 @Getter
 @Setter
