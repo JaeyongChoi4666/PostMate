@@ -15,8 +15,6 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
-    # 네이밍 전략을 표준으로: @Table/@Column에 쓴 이름을 그대로 사용
-
   thymeleaf:
     enabled: true
     cache: false

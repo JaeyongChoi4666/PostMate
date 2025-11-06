@@ -24,6 +24,7 @@ public class State {
     @Column(name = "STATE_COLOR", length = 45, nullable = false)
     private String color;
 
-    @JoinColumn(name = "UPPER_CATE_NO", referencedColumnName = "CATE_NO")
+    @Column(name = "UPPER_CATE_NO")
     private Integer upperCateNo;
+
 }

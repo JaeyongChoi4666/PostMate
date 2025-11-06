@@ -29,10 +29,10 @@ public class Schedule {
     @Column(name = "SCH_ED_DATE", nullable = false)
     private LocalDate endDate;
 
-    @JoinColumn(name = "SCH_CATEGORY", referencedColumnName = "CATE_NO")
+    @Column(name = "SCH_CATEGORY")
     private Integer category;
 
-    @JoinColumn(name = "SCH_STATE", referencedColumnName = "STATE_NO")
+    @Column(name = "SCH_STATE")
     private Integer state;
 
     @Column(name = "PAYMENT")
