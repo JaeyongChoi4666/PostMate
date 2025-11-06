@@ -8,11 +8,15 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update   # 개발 중에는 update/validate, 운영은 ddl-auto 비권장
+      ddl-auto: validate  # 운영 권장(자동 생성/수정 방지). 개발시엔 update 사용 가능
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
       hibernate:
         format_sql: true
     show-sql: true
+    # 네이밍 전략을 표준으로: @Table/@Column에 쓴 이름을 그대로 사용
+
   thymeleaf:
     enabled: true
     cache: false
