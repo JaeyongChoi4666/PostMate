@@ -17,11 +17,11 @@ body {
 }
 
 .calendar {
-    width: min(960px); background: var(--card); border-radius: 20px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); margin-right: 20px;
+    width: min(60%); background: var(--card); border-radius: 20px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); margin-right: 20px;
 }
 
 .contract {
-    width: min(350px); background: var(--card); border-radius: 20px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    width: min(20%); background: var(--card); border-radius: 20px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
 }
 
 .cal-header {
@@ -106,4 +106,8 @@ button:active { transform: translateY(1px); }
 
 .schedule-indicator:hover {
     opacity: 0.8;
+}
+
+.mainContainer {
+    width: 90%;
 }

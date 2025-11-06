@@ -23,7 +23,7 @@
     </div>
 </div>
 
-<main class="container d-flex">
+<main class="mainContainer d-flex justify-content-center">
     <div class="calendar" aria-label="달력">
         <div class="cal-header">
             <div class="title" aria-live="polite" aria-atomic="true">
@@ -66,7 +66,6 @@
         </div>
 
         <div id="contractList"></div>
-
     </div>
 </main>
 
@@ -132,19 +131,19 @@
             <div class="modal-body">
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control mb-3" id="scheduleTitle" placeholder="일정명을 입력하세요" value="" name="scheduleTitle" required>
-                    <label for="scheduleTitle">일정명</label>
+                    <label for="scheduleTitle">일정명 <span class="text-danger">*</span></label>
                 </div>
                 <div class="row g-2 mb-3">
                     <div class="col-md">
                         <div class="form-floating">
                             <input type="date" class="form-control" id="schStrDate" value="" name="schStrDate" required>
-                            <label for="schStrDate">일정 시작일</label>
+                            <label for="schStrDate">일정 시작일 <span class="text-danger">*</span></label>
                         </div>
                     </div>
                     <div class="col-md">
                         <div class="form-floating">
                             <input type="date" class="form-control" id="schEndDate" value="" name="schEndDate" required>
-                            <label for="schEndDate">일정 종료일</label>
+                            <label for="schEndDate">일정 종료일 <span class="text-danger">*</span></label>
                         </div>
                     </div>
                 </div>
@@ -152,11 +151,11 @@
                     <select class="form-select" id="scheduleCategory" aria-label="scheduleCategory" name="scheduleCategory" required>
                         <option value="0" selected>일정 종류를 선택해주세요</option>
                     </select>
-                    <label for="scheduleCategory">일정종류</label>
+                    <label for="scheduleCategory">일정종류 <span class="text-danger">*</span></label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="number" class="form-control mb-3" id="schedulePayment" placeholder="수익금을 입력하세요" name="schedulePayment" step="1000" required>
-                    <label for="schedulePayment">수익금</label>
+                    <input type="number" class="form-control mb-3" id="schedulePayment" placeholder="수익금을 입력하세요" name="schedulePayment" step="1000" value="0" required>
+                    <label for="schedulePayment">수익금 <span class="text-danger">*</span></label>
                 </div>
                 <div class="form-floating mb-3">
                     <textarea class="form-control mb-3" id="scheduleMemo" placeholder="일정 상세내용을 입력하세요" name="scheduleMemo" style="height: 100px" rows="4"></textarea>
@@ -387,14 +386,14 @@
                 // 행 번호로 정렬
                 schedulesWithRow.sort((a, b) => a.row - b.row);
 
-                // 최대 3개까지만 표시 (더 많으면 +N 표시)
-                const maxDisplay = 3;
+                // 최대 6개까지만 표시 (더 많으면 +N 표시)
+                const maxDisplay = 6;
                 schedulesWithRow.slice(0, maxDisplay).forEach(item => {
                     const schedule = item.schedule;
                     const indicator = document.createElement('div');
                     indicator.className = 'schedule-indicator';
                     indicator.textContent = schedule.SCH_TITLE;
-                    indicator.title = `${schedule.SCH_TITLE} (${schedule.SCH_ST_DATE} ~ ${schedule.SCH_ED_DATE})`;
+                    indicator.title = `${schedule.CATE_NAME}`;
 
                     // 카테고리별 색상 적용 (선택사항)
                     indicator.style.fontSize = '11px';
@@ -540,6 +539,7 @@
                 modal.show();
 
                 $("#schStrDate").val(selectedDay);
+                $("#schEndDate").val(selectedDay);
             });
 
             cells.push(cell);
