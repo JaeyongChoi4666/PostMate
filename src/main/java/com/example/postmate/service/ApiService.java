@@ -58,6 +58,7 @@ public class ApiService {
             case "4" -> "40";
             case "5" -> "50";
             case "6" -> "60";
+            case "7" -> "70";
             default -> null;
         };
         return scheduleRepository.addSchedule(
