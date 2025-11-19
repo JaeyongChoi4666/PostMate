@@ -4,7 +4,7 @@ spring:
   application:
     name: PostMate
   datasource:
-    url: jdbc:mysql://192.168.0.20:3306/postmate?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://192.168.0.20:3306/postmate?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: root
     password: dnfl4585
     driver-class-name: com.mysql.cj.jdbc.Driver
