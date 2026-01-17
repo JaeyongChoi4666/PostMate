@@ -8,6 +8,8 @@
     --ring: rgba(34,211,238,0.45);
 }
 
+
+
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body {
@@ -17,11 +19,11 @@ body {
 }
 
 .calendar {
-    width: min(60%); background: var(--card); border-radius: 20px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); margin-right: 20px;
+    width: min(70%); background: var(--card); border-radius: 20px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
 }
 
 .contract {
-    width: min(20%); background: var(--card); border-radius: 20px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    width: min(30%); background: var(--card); border-radius: 20px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
 }
 
 .cal-header {
@@ -90,9 +92,7 @@ button:active { transform: translateY(1px); }
 .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); opacity: .8; }
 
 @media (max-width: 520px) {
-    .day { padding: 8px; }
     .date { font-size: 13px; }
-    button { padding: 8px 10px; }
 }
 
 .schedule-indicators {
@@ -109,5 +109,59 @@ button:active { transform: translateY(1px); }
 }
 
 .mainContainer {
-    width: 90%;
+    display : flex !important;
+    width: 70%;
+}
+
+.smallText{font-size: 0.75rem}
+.mediumText{font-size: 1.1rem}
+
+/*조금작은화면*/
+@media (max-width: 1715px) {
+    .mainContainer{
+        display : flex !important;
+        width: 90%
+    }
+    .smallText{font-size: 0.65rem}
+    .mediumText{font-size: 0.9rem}
+}
+
+/*모바일화면*/
+@media (max-width: 973px){
+    body{
+        padding: 10px 0;
+    }
+    .smallText{font-size: 0.5rem}
+    .mediumText{font-size: 0.65rem}
+    .mainContainer{
+        display: block !important;
+        width : 100%;
+    }
+    .calendar {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 0;
+        background: none;
+        box-shadow: none;
+    }
+    .contract {
+        width: 100%
+    }
+    #payment{
+        font-size: 1rem !important;
+    }
+    .won{
+        font-size: 0.8rem !important;
+    }
+    button{padding: 1px 5px}
+    .gridHeader {padding: 8px 8px 0 8px;}
+    .day{min-height:0;}
+    .contract{border-radius: 0;}
+    .card-body{
+        padding: 0.5rem !important;
+    }
+    .btn-close{
+        width: 0.4rem !important;
+        height: 0.4rem !important;
+    }
 }
