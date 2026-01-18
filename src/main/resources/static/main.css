@@ -115,6 +115,7 @@ button:active { transform: translateY(1px); }
 
 .smallText{font-size: 0.75rem}
 .mediumText{font-size: 1.1rem}
+.mobile_count{display: none;}
 
 /*조금작은화면*/
 @media (max-width: 1715px) {
@@ -163,5 +164,12 @@ button:active { transform: translateY(1px); }
     .btn-close{
         width: 0.4rem !important;
         height: 0.4rem !important;
+    }
+    .mobile_schedule{
+        display:none;
+    }
+    .mobile_count{
+        display: block;
+        font-size: 0.6rem;
     }
 }
