@@ -32,6 +32,7 @@
             </div>
             <div class="controls">
                 <span style="font-size: 30px; color: #22d3ee" id="payment" >300,000</span>
+                <span style="font-size: 30px; color: #22d3ee; display: none" id="exceptedPayment">300,000</span>
                 <span class="won" style="font-size: 20px; color: #e5e7eb; padding-top: 5px">원</span>
                 <button id="prevBtn" aria-label="이전 달">◀</button>
                 <button id="todayBtn" class="primary" aria-label="오늘로 이동">오늘</button>
@@ -50,6 +51,10 @@
                     <div class="title d-flex col mb-3" aria-live="polite" aria-atomic="true">
                         <span class="year">계약상황</span>
                         <button type="button" class="btn primary btn-sm" data-bs-toggle="modal" data-bs-target="#popup_addContract">추가</button>
+                        <div class="form-check ms-auto">
+                            <input class="form-check-input" type="checkbox" value="" id="exceptContract">
+                            <label class="form-check-label" for="exceptContract">계약 제외</label>
+                        </div>
                         <div class="form-check ms-auto">
                             <input class="form-check-input" type="checkbox" value="" id="chk_searchAll">
                             <label class="form-check-label" for="chk_searchAll">종료계약 포함</label>
@@ -654,9 +659,20 @@
             }
         });
 
-        //계약검색
+        //종료계약 포함
         $("#chk_searchAll").on("click", function() {
             searchContract();
+        });
+
+        //계약 제외
+        $("#exceptContract").on("click", function() {
+            if ($('#exceptContract').is(':checked')) {
+                $('#payment').hide();
+                $('#exceptedPayment').show();
+            } else {
+                $('#payment').show();
+                $('#exceptedPayment').hide();
+            }
         });
 
         //일정추가
@@ -1071,8 +1087,11 @@
                 month: month
             },
             success: function(response) {
+                console.log(response);
                 const totalPayment = response.TOTAL_PAYMENT || 0;
+                const schedulePayment = response.SCHEDULE_PAYMENT || 0;
                 $("#payment").text(addCommas(totalPayment));
+                $("#exceptedPayment").text(addCommas(schedulePayment));
             },
             error: function(xhr) {
                 console.log("status:", xhr.status);
