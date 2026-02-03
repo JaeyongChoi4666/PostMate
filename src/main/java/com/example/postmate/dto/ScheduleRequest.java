@@ -16,6 +16,7 @@ public class ScheduleRequest {
     private String scheduleCategory;
     private String scheduleState;
     private BigDecimal schedulePayment;
+    private Integer preTax;
     private String scheduleMemo;
 
 }

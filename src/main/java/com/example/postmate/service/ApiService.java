@@ -68,6 +68,7 @@ public class ApiService {
                 request.getScheduleCategory(),
                 schState,
                 request.getSchedulePayment(),
+                request.getPreTax(),
                 request.getScheduleMemo()
         );
     }
@@ -85,6 +86,7 @@ public class ApiService {
                 request.getScheduleCategory(),
                 request.getScheduleState(),
                 request.getSchedulePayment(),
+                request.getPreTax(),
                 request.getScheduleMemo()
         );
     }

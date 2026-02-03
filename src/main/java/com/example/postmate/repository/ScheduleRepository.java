@@ -35,8 +35,8 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
     @Transactional
     @Query(value = """
     INSERT INTO
-        TBL_SCHEDULE (SCH_TITLE, SCH_ST_DATE, SCH_ED_DATE, SCH_CATEGORY, SCH_STATE, PAYMENT, SCH_MEMO)
-    VALUES (:schTitle,:schStDate,:schEdDate,:schCategory,:schState,:payment,:schMemo)
+        TBL_SCHEDULE (SCH_TITLE, SCH_ST_DATE, SCH_ED_DATE, SCH_CATEGORY, SCH_STATE, PAYMENT, PRE_TAX, SCH_MEMO)
+    VALUES (:schTitle,:schStDate,:schEdDate,:schCategory,:schState,:payment,:preTax,:schMemo)
     """, nativeQuery = true)
     Integer addSchedule(
         @Param("schTitle") String schTitle,
@@ -45,6 +45,7 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
         @Param("schCategory") String schCategory,
         @Param("schState") String schState,
         @Param("payment") BigDecimal payment,
+        @Param("preTax") Integer preTax,
         @Param("schMemo") String schMemo
     );
 
@@ -57,6 +58,7 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
         SC.SCH_CATEGORY,
         SC.SCH_STATE,
         SC.PAYMENT,
+        SC.PRE_TAX,
         SC.SCH_MEMO,
         CA.CATE_NO,
         CA.CATE_NAME,
@@ -83,6 +85,7 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
         SCH_CATEGORY = :schCategory,
         SCH_STATE = :schState,
         PAYMENT = :payment,
+        PRE_TAX = :preTax,
         SCH_MEMO = :schMemo
     WHERE SCH_NO = :schNo
     """, nativeQuery = true)
@@ -94,6 +97,7 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
             @Param("schCategory") String schCategory,
             @Param("schState") String schState,
             @Param("payment") BigDecimal payment,
+            @Param("preTax") Integer preTax,
             @Param("schMemo") String schMemo
     );
 
@@ -106,7 +110,7 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
     void deleteSchedule(@Param("schNo") Long schNo);
 
     @Query(value = """
-    SELECT COALESCE(SUM(PAYMENT), 0) as TOTAL_PAYMENT
+    SELECT ROUND(COALESCE(SUM(IF(PRE_TAX = 1, PAYMENT * 0.967, PAYMENT)),0),0) as TOTAL_PAYMENT
     FROM TBL_SCHEDULE
     WHERE (YEAR(SCH_ST_DATE) = :year AND MONTH(SCH_ST_DATE) = :month)
        OR (YEAR(SCH_ED_DATE) = :year AND MONTH(SCH_ED_DATE) = :month)

@@ -158,9 +158,17 @@
                     </select>
                     <label for="scheduleCategory">일정종류 <span class="text-danger">*</span></label>
                 </div>
-                <div class="form-floating mb-3">
-                    <input type="number" class="form-control mb-3" id="schedulePayment" placeholder="수익금을 입력하세요" name="schedulePayment" step="1000" value="0" required>
-                    <label for="schedulePayment">수익금 <span class="text-danger">*</span></label>
+                <div class="row g-2">
+                    <div class="col-8">
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control mb-3" id="schedulePayment" placeholder="수익금을 입력하세요" name="schedulePayment" step="1000" value="0" required>
+                            <label for="schedulePayment">수익금 <span class="text-danger">*</span></label>
+                        </div>
+                    </div>
+                    <div class="col-4 d-flex align-items-center pb-4">
+                        <input class="form-check-input mx-2" type="checkbox" value="" id="preTax">
+                        <label class="form-check-label" for="preTax">3.3%공제</label>
+                    </div>
                 </div>
                 <div class="form-floating mb-3">
                     <textarea class="form-control mb-3" id="scheduleMemo" placeholder="일정 상세내용을 입력하세요" name="scheduleMemo" style="height: 100px" rows="4"></textarea>
@@ -215,9 +223,17 @@
                     </select>
                     <label for="detailScheduleState">일정상태</label>
                 </div>
-                <div class="form-floating mb-3">
-                    <input type="number" class="form-control" id="detailSchedulePayment" placeholder="수익금" step="1000" disabled>
-                    <label for="detailSchedulePayment">수익금</label>
+                <div class="row g-2">
+                    <div class="col-8">
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control" id="detailSchedulePayment" placeholder="수익금" step="1000" disabled>
+                            <label for="detailSchedulePayment">수익금</label>
+                        </div>
+                    </div>
+                    <div class="col-4 d-flex align-items-center pb-4">
+                        <input class="form-check-input mx-2" type="checkbox" value="" id="detailPreTax">
+                        <label class="form-check-label" for="detailPreTax">3.3%공제</label>
+                    </div>
                 </div>
                 <div class="form-floating mb-3">
                     <textarea class="form-control" id="detailScheduleMemo" placeholder="일정 상세내용" style="height: 100px" rows="4" disabled></textarea>
@@ -682,6 +698,7 @@
             const schEndDate        = $("#schEndDate");
             const scheduleCategory  = $("#scheduleCategory");
             const schedulePayment   = $("#schedulePayment");
+            const preTax            = $("#preTax").prop("checked") ? 1 : 0;
             const scheduleMemo      = $("#scheduleMemo");
 
             if(scheduleTitle.val() === ""){
@@ -709,6 +726,7 @@
                     schEndDate          : schEndDate.val(),
                     scheduleCategory    : scheduleCategory.val(),
                     schedulePayment     : schedulePayment.val(),
+                    preTax              : preTax,
                     scheduleMemo        : scheduleMemo.val()
                 };
                 $.ajax({
@@ -740,6 +758,7 @@
             const scheduleCategory  = $("#detailScheduleCategory");
             const scheduleState     = $("#detailScheduleState");
             const schedulePayment   = $("#detailSchedulePayment");
+            const preTax            = $("#detailPreTax").prop("checked") ? 1 : 0;
             const scheduleMemo      = $("#detailScheduleMemo");
 
             if(scheduleTitle.val() === ""){
@@ -772,6 +791,7 @@
                     scheduleCategory    : scheduleCategory.val(),
                     scheduleState       : scheduleState.val(),
                     schedulePayment     : schedulePayment.val(),
+                    preTax              : preTax,
                     scheduleMemo        : scheduleMemo.val()
                 };
                 $.ajax({
@@ -860,6 +880,12 @@
         document.getElementById('detailScheduleCategory').value = schedule.CATE_NO;
         document.getElementById('detailSchedulePayment').value = schedule.PAYMENT;
         document.getElementById('detailScheduleMemo').value = schedule.SCH_MEMO || '';
+
+        if (schedule.PRE_TAX === true) {
+            $("#detailPreTax").prop("checked", true);
+        } else {
+            $("#detailPreTax").prop("checked", false);
+        }
 
         // 카테고리 셀렉트박스 옵션 로드 (이미 로드되어 있지 않은 경우)
         const categorySelect = document.getElementById('detailScheduleCategory');
