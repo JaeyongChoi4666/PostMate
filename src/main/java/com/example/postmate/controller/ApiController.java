@@ -67,11 +67,13 @@ public class ApiController {
 
     //일정추가
     @PostMapping(value = "/addSchedule")
-    public ResponseEntity<Integer> addSchedule(@RequestBody ScheduleRequest request) {
+    public ResponseEntity<?> addSchedule(@RequestBody ScheduleRequest request) {
         log.info("POST /addSchedule called. payload={}", request);
         try {
             int result = apiService.addSchedule(request);
             return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));
         } catch (Exception e) {
             log.error("addSchedule failed", e);
             // 클라이언트 콘솔에서 xhr.status, xhr.responseText로 바로 확인 가능
@@ -87,11 +89,13 @@ public class ApiController {
 
     //일정수정
     @PutMapping(value = "/updateSchedule")
-    public ResponseEntity<Integer> updateSchedule(@RequestBody ScheduleRequest request) {
+    public ResponseEntity<?> updateSchedule(@RequestBody ScheduleRequest request) {
         log.info("PUT /updateSchedule called. payload={}", request);
         try {
             int result = apiService.updateSchedule(request);
             return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));
         } catch (Exception e) {
             log.error("updateSchedule failed", e);
             return ResponseEntity.internalServerError().build();

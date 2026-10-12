@@ -62,6 +62,10 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
         SC.SCH_MEMO,
         CA.CATE_NO,
         CA.CATE_NAME,
+        (SELECT BASE.STATE_COLOR FROM TBL_STATE BASE
+         WHERE BASE.UPPER_CATE_NO = CA.CATE_NO
+         ORDER BY CASE WHEN UPPER(BASE.STATE_COLOR) IN ('#999999', '#FFFFFF') THEN 1 ELSE 0 END,
+                  BASE.STATE_NO DESC LIMIT 1) AS CATE_COLOR,
         ST.STATE_NAME,
         ST.STATE_COLOR
     FROM TBL_SCHEDULE SC

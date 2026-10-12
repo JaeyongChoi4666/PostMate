@@ -1,18 +1,29 @@
 <!DOCTYPE html>
-<html lang="ko" data-bs-theme="dark">
+<html lang="ko" data-bs-theme="light" data-accent="blue">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>승희의 PostMate</title>
-    <link rel="stylesheet" href="/main.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/main.css" />
+    <script src="/appearance.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
 
+<header class="app-header">
+    <a class="brand" href="/" aria-label="PostMate 홈"><span class="brand-mark">P<span>·</span></span><span>PostMate<small>승희의 워크스페이스</small></span></a>
+    <div class="header-actions"><span class="header-caption">일정과 계약을 한눈에</span>
+        <button type="button" class="btn primary add-schedule-trigger"><span aria-hidden="true">＋</span> 일정 추가</button>
+        <button type="button" class="settings-button" data-bs-toggle="modal" data-bs-target="#appearanceModal" aria-label="화면 설정" title="화면 설정">
+            <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m9.5 3-.6 2.3-2 .9-2.2-.7-2 3.5 1.6 1.7v2.6L2.7 15l2 3.5 2.2-.7 2 .9.6 2.3h4l.6-2.3 2-.9 2.2.7 2-3.5-1.6-1.7v-2.6l1.6-1.7-2-3.5-2.2.7-2-.9-.6-2.3Z"/><circle cx="11.5" cy="12" r="3"/></svg>
+        </button>
+    </div>
+</header>
+
 <!-- Toast 컨테이너 -->
-<div class="toast-container position-fixed top-50 start-50 translate-middle p-3" style="z-index: 11000">
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11000">
     <div id="alertToast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body" id="toastMessage">
@@ -30,20 +41,21 @@
                 <span class="month" id="monthLabel">월</span>
                 <span class="year" id="yearLabel">년</span>
             </div>
+            <div class="calendar-summary"><div><span class="summary-label">이번 달 예상 수익</span><div class="payment-value"><span id="payment">0</span><span id="exceptedPayment" style="display: none">0</span><span class="won">원</span></div></div></div>
             <div class="controls">
-                <span style="font-size: 30px; color: #22d3ee" id="payment" >300,000</span>
-                <span style="font-size: 30px; color: #22d3ee; display: none" id="exceptedPayment">300,000</span>
-                <span class="won" style="font-size: 20px; color: #e5e7eb; padding-top: 5px">원</span>
                 <button id="prevBtn" aria-label="이전 달">◀</button>
                 <button id="todayBtn" class="primary" aria-label="오늘로 이동">오늘</button>
                 <button id="nextBtn" aria-label="다음 달">▶</button>
             </div>
         </div>
 
+
         <section class="gridHeader" id="dowRow" aria-hidden="true"></section>
-        <section class="grid" id="daysGrid" role="feed" aria-label="날짜 그리드"></section>
+        <section class="grid" id="daysGrid" role="group" aria-label="날짜 그리드"></section>
+        <div class="calendar-footer"><span><i class="dot"></i> 오늘</span><span id="selectedDateHint">날짜를 선택하세요</span></div>
     </div>
 
+    <aside class="workspace-sidebar">
     <div class="contract" aria-label="계약">
         <div class="cal-header">
             <div class="container">
@@ -53,7 +65,7 @@
                         <button type="button" class="btn primary btn-sm" data-bs-toggle="modal" data-bs-target="#popup_addContract">추가</button>
                         <div class="form-check ms-auto">
                             <input class="form-check-input" type="checkbox" value="" id="exceptContract">
-                            <label class="form-check-label" for="exceptContract">계약 제외</label>
+                            <label class="form-check-label" for="exceptContract">수익에서 계약 제외</label>
                         </div>
                         <div class="form-check ms-auto">
                             <input class="form-check-input" type="checkbox" value="" id="chk_searchAll">
@@ -63,7 +75,7 @@
                 </div>
                 <div class="row">
                     <div class="input-group input-group-sm col">
-                        <input type="text" class="form-control" placeholder="찾을 계약명을 입력해주세요" aria-label="Recipient’s username" aria-describedby="basic-addon2" id="conTitle">
+                        <input type="search" class="form-control" placeholder="계약명으로 검색" aria-label="계약명 검색" aria-describedby="basic-addon2" id="conTitle">
                         <button class="input-group-text" id="basic-addon2" onclick="searchContract()">검색</button>
                     </div>
                 </div>
@@ -71,8 +83,42 @@
         </div>
 
         <div id="contractList"></div>
+        <nav class="contract-pagination" id="contractPagination" aria-label="계약 목록 페이지" hidden>
+            <button type="button" id="contractPrevPage" aria-label="이전 계약 페이지">◀</button>
+            <span id="contractPageLabel" aria-live="polite"></span>
+            <button type="button" id="contractNextPage" aria-label="다음 계약 페이지">▶</button>
+        </nav>
     </div>
+    <section class="completion-stats" aria-labelledby="completionStatsTitle" aria-live="polite">
+        <div class="stats-heading"><h2 id="completionStatsTitle">이번 달 완료 일감</h2><span id="statsMonth"></span></div>
+        <div class="stats-metrics"><div><span>완료한 일감</span><strong id="completedCount">0<small>건</small></strong></div><div><span>완료율</span><strong id="completionRate">0<small>%</small></strong></div></div>
+        <div class="stats-progress" role="progressbar" aria-label="이달 종료 일감 완료율" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="completionProgress"></div></div>
+        <div class="stats-revenue"><span>완료 일감 수익 <small>3.3% 공제 반영</small></span><strong id="completedRevenue">0 원</strong></div>
+        <div class="stats-categories" id="completedCategories"></div>
+        <p class="stats-note">종료일이 이달인 일감 중 업로드·작성·작업 완료 및 입금 완료 상태 기준입니다.</p>
+    </section>
+    </aside>
 </main>
+<footer class="app-footer">PostMate <span>나의 일정, 나의 페이스.</span></footer>
+
+<div class="modal fade" id="appearanceModal" tabindex="-1" aria-labelledby="appearanceLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+        <div class="modal-header"><h2 class="modal-title fs-5" id="appearanceLabel">화면 설정</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button></div>
+        <div class="modal-body appearance-body"><p class="text-body-secondary">내 취향에 맞는 작업 공간을 만들어보세요.</p>
+            <fieldset><legend>화면 모드</legend><div class="mode-options">
+                <label class="mode-choice"><input type="radio" name="appearance-mode" value="light"><span><span aria-hidden="true">☀</span> 라이트<small>밝고 선명한 화면</small></span></label>
+                <label class="mode-choice"><input type="radio" name="appearance-mode" value="dark"><span><span aria-hidden="true">☾</span> 다크<small>편안하고 차분한 화면</small></span></label>
+            </div></fieldset>
+            <fieldset><legend>포인트 컬러</legend><div class="accent-options">
+                <label class="accent-choice" style="--swatch:#b72c40"><input type="radio" name="appearance-accent" value="red"><span class="color-swatch"></span><span>레드</span></label>
+                <label class="accent-choice" style="--swatch:#b34b0b"><input type="radio" name="appearance-accent" value="orange"><span class="color-swatch"></span><span>오렌지</span></label>
+                <label class="accent-choice" style="--swatch:#18754e"><input type="radio" name="appearance-accent" value="green"><span class="color-swatch"></span><span>그린</span></label>
+                <label class="accent-choice" style="--swatch:#3459ca"><input type="radio" name="appearance-accent" value="blue"><span class="color-swatch"></span><span>블루</span></label>
+                <label class="accent-choice" style="--swatch:#7943bd"><input type="radio" name="appearance-accent" value="purple"><span class="color-swatch"></span><span>퍼플</span></label>
+            </div></fieldset><p class="appearance-note">선택한 설정은 이 브라우저에 자동으로 저장됩니다.</p>
+        </div><div class="modal-footer"><button type="button" class="btn primary" data-bs-dismiss="modal">완료</button></div>
+    </div></div>
+</div>
 
 <!--계약 추가 modal -->
 <div class="modal fade" id="popup_addContract" tabindex="-1" aria-labelledby="addContractLabel" aria-hidden="true">
@@ -135,7 +181,7 @@
             </div>
             <div class="modal-body">
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control mb-3" id="scheduleTitle" placeholder="일정명을 입력하세요" value="" name="scheduleTitle" required>
+                    <input type="text" class="form-control mb-3" id="scheduleTitle" maxlength="45" placeholder="일정명을 입력하세요" value="" name="scheduleTitle" required>
                     <label for="scheduleTitle">일정명 <span class="text-danger">*</span></label>
                 </div>
                 <div class="row g-2 mb-3">
@@ -161,7 +207,7 @@
                 <div class="row g-2">
                     <div class="col-8">
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control mb-3" id="schedulePayment" placeholder="수익금을 입력하세요" name="schedulePayment" step="1000" value="0" required>
+                            <input type="number" class="form-control mb-3" id="schedulePayment" min="0" max="2147483647" placeholder="수익금을 입력하세요" name="schedulePayment" step="1000" value="0" required>
                             <label for="schedulePayment">수익금 <span class="text-danger">*</span></label>
                         </div>
                     </div>
@@ -171,7 +217,7 @@
                     </div>
                 </div>
                 <div class="form-floating mb-3">
-                    <textarea class="form-control mb-3" id="scheduleMemo" placeholder="일정 상세내용을 입력하세요" name="scheduleMemo" style="height: 100px" rows="4"></textarea>
+                    <textarea class="form-control mb-3" id="scheduleMemo" maxlength="45" placeholder="일정 상세내용을 입력하세요" name="scheduleMemo" style="height: 100px" rows="4"></textarea>
                     <label for="scheduleMemo">일정 상세</label>
                 </div>
                 <div class="modal-footer">
@@ -194,7 +240,7 @@
             <div class="modal-body">
                 <input type="hidden" id="detailScheduleNo" value="">
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="detailScheduleTitle" placeholder="일정명" disabled>
+                    <input type="text" class="form-control" id="detailScheduleTitle" maxlength="45" placeholder="일정명" disabled>
                     <label for="detailScheduleTitle">일정명</label>
                 </div>
                 <div class="row g-2 mb-3">
@@ -226,7 +272,7 @@
                 <div class="row g-2">
                     <div class="col-8">
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control" id="detailSchedulePayment" placeholder="수익금" step="1000" disabled>
+                            <input type="number" class="form-control" id="detailSchedulePayment" min="0" max="2147483647" placeholder="수익금" step="1000" disabled>
                             <label for="detailSchedulePayment">수익금</label>
                         </div>
                     </div>
@@ -236,7 +282,7 @@
                     </div>
                 </div>
                 <div class="form-floating mb-3">
-                    <textarea class="form-control" id="detailScheduleMemo" placeholder="일정 상세내용" style="height: 100px" rows="4" disabled></textarea>
+                    <textarea class="form-control" id="detailScheduleMemo" maxlength="45" placeholder="일정 상세내용" style="height: 100px" rows="4" disabled></textarea>
                     <label for="detailScheduleMemo">일정 상세</label>
                 </div>
             </div>
@@ -250,12 +296,12 @@
 </div>
 
 <!-- 일정 리스트 보기 modal ( mobile version ) -->
-<div class="modal fade" id="popup_scheduleList" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="popup_scheduleList" tabindex="-1" aria-labelledby="scheduleListLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-6" id="scheduleListLabel">일정 목록</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
             </div>
             <div class="modal-body" id="scheduleListBody">
                 <!-- JS로 일정 목록 삽입 -->
@@ -281,12 +327,13 @@
         toastBody.textContent = message;
 
         // 타입별 색상 변경
-        toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+        toastEl.classList.remove('text-bg-primary', 'text-bg-success', 'text-bg-warning', 'text-bg-danger');
+        toastEl.classList.add(`text-bg-${type}`);
 
         // Toast 표시
-        const toast = new bootstrap.Toast(toastEl, {
+        const toast = bootstrap.Toast.getOrCreateInstance(toastEl, {
             autohide: true,
-            delay: 500
+            delay: 3000
         });
         toast.show();
     }
@@ -315,6 +362,18 @@
     let current = new Date(today.getFullYear(), today.getMonth(), 1);
     let selected = null; // Date object or null
     let scheduleData = []; // 일정 데이터를 저장할 전역 변수 추가
+    let scheduleRequest = 0;
+    let paymentRequest = 0;
+    let contractRequest = 0;
+    let contractData = [];
+    let contractPage = 0;
+    const contractsPerPage = 3;
+    let stateRequest = 0;
+
+    new ResizeObserver(() => {
+        document.querySelector('.workspace-sidebar').style.setProperty('--calendar-height',
+            `${document.querySelector('.calendar').getBoundingClientRect().height}px`);
+    }).observe(document.querySelector('.calendar'));
 
     function sameDate(a, b) {
         return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
@@ -342,6 +401,81 @@
         return scheduleData.filter(schedule => isDateInSchedule(date, schedule));
     }
 
+    function openAddSchedule(date = selected || today) {
+        $('#schStrDate').val(formatLocalDate(date));
+        $('#schEndDate').val(nextDate(formatLocalDate(date)));
+        syncScheduleDates(false);
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('popup_addSchedule')).show();
+    }
+    document.querySelectorAll('.add-schedule-trigger').forEach(button => button.addEventListener('click', () => openAddSchedule()));
+
+    function formatLocalDate(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
+    function nextDate(value) {
+        const date = parseLocalDate(value);
+        date.setDate(date.getDate() + 1);
+        return formatLocalDate(date);
+    }
+    function syncScheduleDates(editing) {
+        const start = document.getElementById(editing ? 'detailSchStrDate' : 'schStrDate');
+        const end = document.getElementById(editing ? 'detailSchEndDate' : 'schEndDate');
+        end.min = start.value ? (editing ? start.value : nextDate(start.value)) : '';
+        if (end.value && end.min && end.value < end.min) end.value = end.min;
+    }
+    ['input', 'change'].forEach(event => {
+        document.getElementById('schStrDate').addEventListener(event, () => syncScheduleDates(false));
+        document.getElementById('detailSchStrDate').addEventListener(event, () => syncScheduleDates(true));
+    });
+
+    // Saturated and medium-dark status fills use bright text; pastel fills keep dark text.
+    function scheduleColors(value) {
+        const color = /^#[0-9a-f]{6}$/i.test(value || '') ? value : '#d9e2f3';
+        const [red, green, blue] = [1, 3, 5].map(offset => parseInt(color.slice(offset, offset + 2), 16));
+        const brightness = (red * 299 + green * 587 + blue * 114) / 1000;
+        return { background: color, foreground: brightness < 175 ? '#ffffff' : '#111827' };
+    }
+
+    function renderCompletionStats() {
+        const monthPrefix = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+        const monthSchedules = [...new Map(scheduleData.filter(schedule => schedule.SCH_ED_DATE?.startsWith(monthPrefix))
+            .map(schedule => [schedule.SCH_NO, schedule])).values()];
+        const completeStates = new Set(['업로드완료', '작성완료', '작업완료', '입금완료']);
+        const completed = monthSchedules.filter(schedule => completeStates.has((schedule.STATE_NAME || '').replace(/\s/g, '')));
+        const rate = monthSchedules.length ? Math.round(completed.length / monthSchedules.length * 100) : 0;
+        const revenue = Math.round(completed.reduce((sum, schedule) => sum + Number(schedule.PAYMENT || 0) *
+            (schedule.PRE_TAX === true || Number(schedule.PRE_TAX) === 1 ? .967 : 1), 0));
+        document.getElementById('statsMonth').textContent = `${current.getFullYear()}.${String(current.getMonth() + 1).padStart(2, '0')}`;
+        document.getElementById('completedCount').innerHTML = `${completed.length}<small>건</small>`;
+        document.getElementById('completionRate').innerHTML = `${rate}<small>%</small>`;
+        document.getElementById('completionProgress').style.width = `${rate}%`;
+        document.querySelector('.stats-progress').setAttribute('aria-valuenow', rate);
+        document.getElementById('completedRevenue').textContent = `${addCommas(revenue)} 원`;
+        const categories = new Map();
+        completed.forEach(schedule => {
+            const key = schedule.CATE_NO ?? 'other';
+            const category = categories.get(key) || { name: schedule.CATE_NAME || '기타', color: schedule.CATE_COLOR, count: 0 };
+            category.count++;
+            categories.set(key, category);
+        });
+        const container = document.getElementById('completedCategories');
+        container.replaceChildren();
+        if (!completed.length) {
+            container.textContent = '아직 완료한 일감이 없어요.';
+        } else {
+            [...categories.values()].sort((a, b) => b.count - a.count).forEach(({name, color, count}) => {
+                const row = document.createElement('div'); row.className = 'stats-category';
+                const label = document.createElement('span'); label.textContent = name;
+                label.className = 'category-badge';
+                const colors = scheduleColors(color);
+                label.style.backgroundColor = colors.background;
+                label.style.color = colors.foreground;
+                const number = document.createElement('strong'); number.textContent = `${count}건`;
+                row.append(label, number); container.append(row);
+            });
+        }
+    }
+
     function render() {
         const year = current.getFullYear();
         const month = current.getMonth();
@@ -358,8 +492,8 @@
         const prevDays = startWeekday; // number of cells from the previous month (since Sun start)
         const prevMonthDays = new Date(year, month, 0).getDate();
 
-        // Build 6 weeks (42 cells) grid for consistent height
-        const totalCells = 35;
+        // Display all weeks needed by the current month.
+        const totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
         const cells = [];
 
         // 일정별로 행 번호를 추적하는 맵
@@ -368,9 +502,12 @@
 
         for (let i = 0; i < totalCells; i++) {
             const cell = document.createElement('div');
-            cell.type = 'button';
             cell.className = 'day';
-            cell.setAttribute('role','gridcell');
+            cell.setAttribute('role','button');
+            cell.tabIndex = 0;
+            const content = document.createElement('div');
+            content.className = 'day-content';
+            cell.appendChild(content);
 
             const dateSpan = document.createElement('span');
             dateSpan.className = 'date';
@@ -397,13 +534,14 @@
             }
 
             dateSpan.textContent = display;
-            cell.appendChild(dateSpan);
+            content.appendChild(dateSpan);
 
             // 해당 날짜의 일정들 가져오기
             const daySchedules = getSchedulesForDate(d);
 
             // 일정이 있으면 표시
             if (daySchedules.length > 0 && inCurrent) {
+                content.style.setProperty('--expanded-height', `${Math.max(176, 47 + daySchedules.length * 25)}px`);
                 const scheduleContainer = document.createElement('div');
                 scheduleContainer.className = 'schedule-indicators';
 
@@ -436,12 +574,16 @@
                 // 행 번호로 정렬
                 schedulesWithRow.sort((a, b) => a.row - b.row);
 
-                // 최대 6개까지만 표시 (더 많으면 +N 표시)
-                const maxDisplay = 6;
-                schedulesWithRow.slice(0, maxDisplay).forEach(item => {
+                const maxDisplay = 5;
+                schedulesWithRow.forEach(item => {
                     const schedule = item.schedule;
                     const indicator = document.createElement('div');
                     indicator.className = 'schedule-indicator smallText mobile_schedule';
+                    indicator.setAttribute('role', 'button');
+                    indicator.tabIndex = 0;
+                    indicator.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); indicator.click(); }
+                    });
                     indicator.textContent = schedule.SCH_TITLE;
                     indicator.title = `${schedule.CATE_NAME}`;
 
@@ -449,8 +591,10 @@
                     indicator.style.overflow = 'hidden';
                     indicator.style.textOverflow = 'ellipsis';
                     indicator.style.whiteSpace = 'nowrap';
-                    indicator.style.backgroundColor = schedule.STATE_COLOR;
-                    indicator.style.color = '#1e293b';
+                    const colors = scheduleColors(schedule.STATE_COLOR);
+                    indicator.style.backgroundColor = colors.background;
+                    indicator.style.color = colors.foreground;
+                    indicator.style.textShadow = colors.foreground === '#ffffff' ? '0 1px 2px rgba(0,0,0,.55)' : 'none';
                     indicator.style.padding = '2px 4px';
                     indicator.style.borderRadius = '3px';
                     indicator.style.marginTop = '2px';
@@ -469,99 +613,28 @@
                 if (daySchedules.length > maxDisplay) {
                     const moreIndicator = document.createElement('div');
                     moreIndicator.className = 'schedule-more';
-                    moreIndicator.textContent = `+${daySchedules.length - maxDisplay}개`;
-                    moreIndicator.style.fontSize = '9px';
-                    moreIndicator.style.color = '#94a3b8';
-                    moreIndicator.style.marginTop = '2px';
-                    moreIndicator.style.cursor = 'pointer';
-                    moreIndicator.style.position = 'relative';
+                    moreIndicator.textContent = `+${daySchedules.length - maxDisplay}`;
+                    moreIndicator.setAttribute('aria-label', `일감 ${daySchedules.length - maxDisplay}개 더 보기`);
+                    cell.classList.add('has-overflow');
 
-                    // 숨겨진 일정들을 담을 툴팁 컨테이너
-                    const tooltip = document.createElement('div');
-                    tooltip.className = 'schedule-tooltip';
-                    tooltip.style.display = 'none';
-                    tooltip.style.position = 'fixed';
-                    tooltip.style.backgroundColor = '#1e293b';
-                    tooltip.style.border = '1px solid #475569';
-                    tooltip.style.borderRadius = '6px';
-                    tooltip.style.padding = '8px';
-                    tooltip.style.zIndex = '9999';
-                    tooltip.style.minWidth = '150px';
-                    tooltip.style.maxWidth = '250px';
-                    tooltip.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.3)';
-
-                    // 숨겨진 일정들 추가
-                    schedulesWithRow.slice(maxDisplay).forEach(item => {
-                        const schedule = item.schedule;
-                        const tooltipItem = document.createElement('div');
-                        tooltipItem.className = 'smallText';
-                        // tooltipItem.style.fontSize = '0.55rem';
-                        tooltipItem.style.padding = '4px';
-                        tooltipItem.style.marginBottom = '4px';
-                        tooltipItem.style.backgroundColor = schedule.STATE_COLOR;
-                        tooltipItem.style.color = '#1e293b';
-                        tooltipItem.style.borderRadius = '3px';
-                        tooltipItem.style.whiteSpace = 'nowrap';
-                        tooltipItem.style.cursor = 'pointer';
-                        tooltipItem.textContent = schedule.SCH_TITLE;
-                        tooltipItem.title = `${schedule.SCH_TITLE} (${schedule.SCH_ST_DATE} ~ ${schedule.SCH_ED_DATE})`;
-
-                        // 툴팁 내 일정 클릭 이벤트
-                        tooltipItem.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            tooltip.style.display = 'none'; // 툴팁 닫기
-                            showScheduleDetail(schedule);
-                        });
-
-                        tooltip.appendChild(tooltipItem);
+                    moreIndicator.setAttribute('role', 'button');
+                    moreIndicator.tabIndex = 0;
+                    moreIndicator.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showScheduleMoblie(daySchedules, d);
+                    });
+                    moreIndicator.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); moreIndicator.click(); }
                     });
 
-
-                    // 툴팁을 body에 직접 추가
-                    document.body.appendChild(tooltip);
-
-                    let hideTimeout = null;
-
-                    // 툴팁 위치 계산 및 표시 함수
-                    const showTooltip = (e) => {
-                        if (hideTimeout) {
-                            clearTimeout(hideTimeout);
-                            hideTimeout = null;
-                        }
-                        const rect = moreIndicator.getBoundingClientRect();
-                        tooltip.style.left = rect.left + 'px';
-                        tooltip.style.top = (rect.bottom + 4) + 'px';
-                        tooltip.style.display = 'block';
-                    };
-
-                    const hideTooltip = () => {
-                        hideTimeout = setTimeout(() => {
-                            tooltip.style.display = 'none';
-                        }, 200);
-                    };
-
-                    // 마우스 오버 이벤트
-                    moreIndicator.addEventListener('mouseenter', showTooltip);
-                    moreIndicator.addEventListener('mouseleave', hideTooltip);
-
-                    // 툴팁 자체의 이벤트
-                    tooltip.addEventListener('mouseenter', () => {
-                        if (hideTimeout) {
-                            clearTimeout(hideTimeout);
-                            hideTimeout = null;
-                        }
-                        tooltip.style.display = 'block';
-                    });
-
-                    tooltip.addEventListener('mouseleave', hideTooltip);
-
-                    scheduleContainer.appendChild(moreIndicator);
+                    content.appendChild(moreIndicator);
                 }
 
-                cell.appendChild(scheduleContainer);
+                content.appendChild(scheduleContainer);
             }
 
             if (sameDate(d, today)) cell.classList.add('today');
+            if (sameDate(d, selected)) cell.classList.add('selected');
 
             // ARIA label for screen readers
             cell.setAttribute('aria-label', `${d.getFullYear()}년 ${MONTHS[d.getMonth()]} ${d.getDate()}일`);
@@ -573,23 +646,18 @@
                 if (d.getMonth() !== month) {
                     current = new Date(d.getFullYear(), d.getMonth(), 1);
                 }
-                render();
+                document.getElementById('selectedDateHint').textContent = `${d.getMonth() + 1}월 ${d.getDate()}일 선택`;
+                if (d.getMonth() !== month) {
+                    searchSchedule(current.getFullYear(), current.getMonth());
+                } else {
+                    render();
+                }
+                if (daySchedules.length) showScheduleMoblie(daySchedules, d);
+                else openAddSchedule(d);
             });
 
-            cell.addEventListener('dblclick', () => {
-                const selectedDay = new Intl.DateTimeFormat("en-CA", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    timeZone: "Asia/Seoul"
-                }).format(d);
-                console.log("dblclick:"+selectedDay);
-
-                const modal = new bootstrap.Modal(document.getElementById('popup_addSchedule'));
-                modal.show();
-
-                $("#schStrDate").val(selectedDay);
-                $("#schEndDate").val(selectedDay);
+            cell.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cell.click(); }
             });
 
             cells.push(cell);
@@ -597,6 +665,7 @@
 
         daysGrid.innerHTML = '';
         for (const c of cells) daysGrid.appendChild(c);
+        renderCompletionStats();
     }
 
     // Navigation
@@ -664,12 +733,16 @@
                     processData: false,
                     success: function(response) {
                         showAlert("계약 저장완료", "success");
-                        location.reload();
+                        bootstrap.Modal.getOrCreateInstance(document.getElementById('popup_addContract')).hide();
+                        $('#contractTitle, #strDate, #endDate, #contractPayment, #contractChannel').val('');
+                        $('#contractCategory').val('0');
+                        searchContract();
+                        updateMonthlyPayment(current.getFullYear(), current.getMonth() + 1);
                     },
                     error: function(xhr) {
                         console.log("status:", xhr.status);
                         console.log("response:", xhr.responseText);
-                        showAlert("저장 중 오류가 발생했습니다", "danger");
+                        showAlert(xhr.responseJSON?.message || "저장 중 오류가 발생했습니다", "danger");
                     }
                 })
             }
@@ -693,6 +766,9 @@
 
         //일정추가
         $("#addSchedule").on("click", function() {
+            for (const input of document.querySelectorAll('#popup_addSchedule input, #popup_addSchedule select, #popup_addSchedule textarea')) {
+                if (!input.reportValidity()) return;
+            }
             const scheduleTitle     = $("#scheduleTitle");
             const schStrDate        = $("#schStrDate");
             const schEndDate        = $("#schEndDate");
@@ -701,7 +777,7 @@
             const preTax            = $("#preTax").prop("checked") ? 1 : 0;
             const scheduleMemo      = $("#scheduleMemo");
 
-            if(scheduleTitle.val() === ""){
+            if(scheduleTitle.val().trim() === ""){
                 showAlert("일정명을 입력하세요", "warning");
                 scheduleTitle.focus();
             }else if(schStrDate.val() === ""){
@@ -710,8 +786,8 @@
             }else if(schEndDate.val() === ""){
                 showAlert("종료일을 입력하세요", "warning");
                 schEndDate.focus();
-            }else if(schStrDate.val() > schEndDate.val()){
-                showAlert("종료일은 시작일 이후여야 합니다", "warning");
+            }else if(schStrDate.val() >= schEndDate.val()){
+                showAlert("종료일은 시작일보다 늦은 날짜여야 합니다", "warning");
                 schEndDate.focus();
             }else if(scheduleCategory.val() === "0"){
                 showAlert("일정종류를 선택하세요", "warning");
@@ -721,7 +797,7 @@
                 schedulePayment.focus();
             }else{
                 const formData = {
-                    scheduleTitle       : scheduleTitle.val(),
+                    scheduleTitle       : scheduleTitle.val().trim(),
                     schStrDate          : schStrDate.val(),
                     schEndDate          : schEndDate.val(),
                     scheduleCategory    : scheduleCategory.val(),
@@ -738,12 +814,16 @@
                     processData: false,
                     success: function(response) {
                         showAlert("일정 저장완료", "success");
-                        location.reload();
+                        bootstrap.Modal.getOrCreateInstance(document.getElementById('popup_addSchedule')).hide();
+                        $('#scheduleTitle, #scheduleMemo').val('');
+                        $('#schedulePayment').val('0');
+                        $('#preTax').prop('checked', false);
+                        searchSchedule(current.getFullYear(), current.getMonth());
                     },
                     error: function(xhr) {
                         console.log("status:", xhr.status);
                         console.log("response:", xhr.responseText);
-                        showAlert("저장 중 오류가 발생했습니다", "danger");
+                        showAlert(xhr.responseJSON?.message || "저장 중 오류가 발생했습니다", "danger");
                     }
                 })
             }
@@ -751,6 +831,9 @@
 
         // 일정 저장 버튼 클릭 (수정 저장)
         $("#saveScheduleBtn").on("click", function() {
+            for (const input of document.querySelectorAll('#popup_scheduleDetail input, #popup_scheduleDetail select, #popup_scheduleDetail textarea')) {
+                if (!input.reportValidity()) return;
+            }
             const scheduleNo        = $("#detailScheduleNo").val();
             const scheduleTitle     = $("#detailScheduleTitle");
             const schStrDate        = $("#detailSchStrDate");
@@ -761,7 +844,7 @@
             const preTax            = $("#detailPreTax").prop("checked") ? 1 : 0;
             const scheduleMemo      = $("#detailScheduleMemo");
 
-            if(scheduleTitle.val() === ""){
+            if(scheduleTitle.val().trim() === ""){
                 showAlert("일정명을 입력하세요", "warning");
                 scheduleTitle.focus();
             }else if(schStrDate.val() === ""){
@@ -785,7 +868,7 @@
             }else{
                 const formData = {
                     scheduleNo          : scheduleNo,
-                    scheduleTitle       : scheduleTitle.val(),
+                    scheduleTitle       : scheduleTitle.val().trim(),
                     schStrDate          : schStrDate.val(),
                     schEndDate          : schEndDate.val(),
                     scheduleCategory    : scheduleCategory.val(),
@@ -809,7 +892,7 @@
                     error: function(xhr) {
                         console.log("status:", xhr.status);
                         console.log("response:", xhr.responseText);
-                        showAlert("수정 중 오류가 발생했습니다", "danger");
+                        showAlert(xhr.responseJSON?.message || "수정 중 오류가 발생했습니다", "danger");
                     }
                 });
             }
@@ -863,13 +946,12 @@
         if (e.isComposing) return;
         if (e.key === "Enter") {
             e.preventDefault();
-            const v = searchInput.value.trim();
-            if (v) searchContract();
+            searchContract();
         }
     });
 
     //사용되는 함수
-    function showScheduleDetail(schedule, returnModalEl) {
+    function showScheduleDetail(schedule) {
         // hidden input에 일정 번호 저장
         document.getElementById('detailScheduleNo').value = schedule.SCH_NO;
 
@@ -877,11 +959,12 @@
         document.getElementById('detailScheduleTitle').value = schedule.SCH_TITLE;
         document.getElementById('detailSchStrDate').value = schedule.SCH_ST_DATE;
         document.getElementById('detailSchEndDate').value = schedule.SCH_ED_DATE;
+        syncScheduleDates(true);
         document.getElementById('detailScheduleCategory').value = schedule.CATE_NO;
         document.getElementById('detailSchedulePayment').value = schedule.PAYMENT;
         document.getElementById('detailScheduleMemo').value = schedule.SCH_MEMO || '';
 
-        if (schedule.PRE_TAX === true) {
+        if (schedule.PRE_TAX === true || Number(schedule.PRE_TAX) === 1) {
             $("#detailPreTax").prop("checked", true);
         } else {
             $("#detailPreTax").prop("checked", false);
@@ -908,14 +991,6 @@
         // 모달 열기
         const detailModalEl = document.getElementById('popup_scheduleDetail');
         const detailModal = bootstrap.Modal.getInstance(detailModalEl) || bootstrap.Modal.getOrCreateInstance(detailModalEl);
-
-        // ✅ 상세 모달이 닫히면 목록 모달 다시 열기
-        detailModalEl.addEventListener('hidden.bs.modal', () => {
-            if (!returnModalEl) return;
-
-            const listModal = bootstrap.Modal.getInstance(returnModalEl) || bootstrap.Modal.getOrCreateInstance(returnModalEl);
-            listModal.show();
-        }, { once: true }); // 중복 방지
 
         detailModal.show();
 
@@ -944,7 +1019,9 @@
     }
 
     function searchContract() {
-        $("#contractList").html('');
+        const requestId = ++contractRequest;
+        document.getElementById('contractPagination').hidden = true;
+        $("#contractList").html('<div class="empty-state" role="status">계약을 불러오는 중입니다…</div>');
         $.ajax({
             url: "/searchContract",
             type: "GET",
@@ -954,7 +1031,28 @@
                 allYn       : $("#chk_searchAll").is(":checked") ? "Y" : "N"
             },
             success: function(response) {
-                $.each(response, function(i, v) {
+                if (requestId !== contractRequest) return;
+                contractData = response;
+                contractPage = 0;
+                renderContractPage();
+            },
+            error: function (xhr) {
+                if (requestId !== contractRequest) return;
+                $("#contractList").html('<div class="empty-state" role="alert"><strong>계약을 불러오지 못했어요</strong>검색 버튼을 눌러 다시 시도해주세요.</div>');
+                console.log("status:", xhr.status);
+                console.log("response:", xhr.responseText);
+            }
+        })
+    }
+
+    function renderContractPage() {
+        const pageCount = Math.max(1, Math.ceil(contractData.length / contractsPerPage));
+        contractPage = Math.min(Math.max(0, contractPage), pageCount - 1);
+                $("#contractList").empty();
+                if (!contractData.length) {
+                    $("#contractList").html('<div class="empty-state"><strong>표시할 계약이 없어요</strong>검색 조건을 바꾸거나 새로운 계약을 추가해보세요.</div>');
+                }
+                $.each(contractData.slice(contractPage * contractsPerPage, (contractPage + 1) * contractsPerPage), function(i, v) {
                     let div_badge = '';
                     if(v.CON_CATEGORY === '브랜드 블로그'){
                         div_badge = '<span class="badge text-bg-danger" style="display:inline-block;">Brand</span>'
@@ -963,10 +1061,10 @@
                     }
                     let innerHTML = '';
                     innerHTML += '<div class="card my-3" style="position: relative; margin: 0 1rem 0 1rem ">';
-                    innerHTML += '  <button type="button" class="btn-close btn-close-white" aria-label="Close" onclick="deleteContract('+v.CON_NO+')" style="position: absolute; top: 10px; right: 10px; z-index: 10;"></button>'
+                    innerHTML += '  <button type="button" class="btn-close btn-close-white" aria-label="계약 삭제" title="계약 삭제" onclick="deleteContract('+Number(v.CON_NO)+')" style="position: absolute; top: 10px; right: 10px; z-index: 10;"></button>'
                     innerHTML += '  <div class="d-flex flex-row">';
                     innerHTML += '      <div class="card-body">'
-                    innerHTML += '          <div class = "mediumText" style="display:inline-block;">'+v.CON_TITLE+'</div>'+div_badge+'';
+                    innerHTML += '          <div class = "mediumText" style="display:inline-block;">'+escapeHtml(v.CON_TITLE)+'</div>'+div_badge+'';
                     innerHTML += '          <div class="mt-1 text-body-secondary smallText">'+v.CON_ST_DATE+' ~ '+v.CON_ED_DATE+'</div>'
                     innerHTML += '      </div>'
                     innerHTML += '      <div class="card-body d-flex justify-content-end align-items-end smallText">'+addCommas(v.PAYMENT)+' 원</div>'
@@ -976,16 +1074,23 @@
                     $("#contractList").append(innerHTML);
                 })
 
-            },
-            error: function (xhr) {
-                console.log("status:", xhr.status);
-                console.log("response:", xhr.responseText);
-            }
-        })
+        document.getElementById('contractPagination').hidden = pageCount <= 1;
+        document.querySelectorAll('#contractList div.mediumText').forEach(title => { title.title = title.textContent; });
+        document.getElementById('contractPageLabel').textContent = `${contractPage + 1} / ${pageCount}`;
+        document.getElementById('contractPrevPage').disabled = contractPage === 0;
+        document.getElementById('contractNextPage').disabled = contractPage === pageCount - 1;
     }
+    document.getElementById('contractPrevPage').addEventListener('click', () => { contractPage--; renderContractPage(); });
+    document.getElementById('contractNextPage').addEventListener('click', () => { contractPage++; renderContractPage(); });
 
     function addCommas(numStr) {
         return Number(numStr).toLocaleString();
+    }
+
+    function escapeHtml(value) {
+        const element = document.createElement('span');
+        element.textContent = value ?? '';
+        return element.innerHTML;
     }
 
     function deleteContract(conId) {
@@ -1002,6 +1107,7 @@
             success: function(response) {
                 showAlert("삭제되었습니다", "success");
                 searchContract(); // 목록 새로고침
+                updateMonthlyPayment(current.getFullYear(), current.getMonth() + 1);
             },
             error: function(xhr) {
                 console.log("status:", xhr.status);
@@ -1030,6 +1136,7 @@
     }
 
     function loadScheduleStateByCate(cateNo, selectedStateNo) {
+        const requestId = ++stateRequest;
         const stateSelect = $("#detailScheduleState");
         // 기존 옵션 제거 (첫 번째 옵션 제외)
         stateSelect.find('option:not(:first)').remove();
@@ -1039,6 +1146,7 @@
             type: "GET",
             data: { cateNo: cateNo },
             success: function(response) {
+                if (requestId !== stateRequest) return;
                 $.each(response, function(i, v) {
                     let innerHTML = '<option value="'+v.STATE_NO+'">'+v.STATE_NAME+'</option>';
                     stateSelect.append(innerHTML);
@@ -1057,6 +1165,7 @@
 
 
     function searchSchedule(year, month) {
+        const requestId = ++scheduleRequest;
         const pad = (n) => String(n).padStart(2, '0');
         const fmt = (dt) =>
             `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
@@ -1088,15 +1197,17 @@
                 schEndDate: lastDayStr
             },
             success: function(response) {
+                if (requestId !== scheduleRequest) return;
                 // 일정 데이터를 전역 변수에 저장
                 scheduleData = response;
                 // 달력 다시 렌더링
                 render();
             },
             error: function(xhr) {
+                if (requestId !== scheduleRequest) return;
                 console.log("status:", xhr.status);
                 console.log("response:", xhr.responseText);
-                showAlert("삭제 중 오류가 발생했습니다", "danger");
+                showAlert("일정을 불러오지 못했습니다. 다시 시도해주세요.", "danger");
             }
         });
 
@@ -1105,6 +1216,7 @@
     }
 
     function updateMonthlyPayment(year, month) {
+        const requestId = ++paymentRequest;
         $.ajax({
             url: "/getMonthlyPaymentSum",
             type: "GET",
@@ -1113,7 +1225,7 @@
                 month: month
             },
             success: function(response) {
-                console.log(response);
+                if (requestId !== paymentRequest) return;
                 const totalPayment = response.TOTAL_PAYMENT || 0;
                 const schedulePayment = response.SCHEDULE_PAYMENT || 0;
                 $("#payment").text(addCommas(totalPayment));
@@ -1148,10 +1260,8 @@
         }
 
         // modal-body 안을 "목록용"으로 구성
-        bodyEl.innerHTML = `
-        <div id="scheduleListBody" class="list-group"></div>
-    `;
-        const listBody = bodyEl.querySelector('#scheduleListBody');
+        bodyEl.innerHTML = '<div class="list-group"></div>';
+        const listBody = bodyEl.querySelector('.list-group');
 
         // 목록 아이템 생성
         daySchedules.forEach((schedule) => {
@@ -1182,15 +1292,22 @@
                     bootstrap.Modal.getInstance(modalEl) ||
                     bootstrap.Modal.getOrCreateInstance(modalEl);
 
-                // 목록 모달 숨기기
+                modalEl.addEventListener('hidden.bs.modal', () => showScheduleDetail(schedule), { once: true });
                 listModalInstance.hide();
-
-                // 상세 보기 열기 (목록 모달 element 전달)
-                showScheduleDetail(schedule, modalEl);
             });
 
             listBody.appendChild(item);
         });
+
+        const addButton = document.createElement('button');
+        addButton.type = 'button';
+        addButton.className = 'btn primary w-100 mt-3';
+        addButton.textContent = '이 날짜에 일정 추가';
+        addButton.addEventListener('click', () => {
+            modalEl.addEventListener('hidden.bs.modal', () => openAddSchedule(date), { once: true });
+            bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+        });
+        bodyEl.appendChild(addButton);
 
         // 모달 열기
         const modal = bootstrap.Modal.getOrCreateInstance(modalEl);

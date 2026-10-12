@@ -51,6 +51,7 @@ public class ApiService {
     }
 
     public int addSchedule(ScheduleRequest request) {
+        validateSchedule(request, false);
         String schState = switch (request.getScheduleCategory()) {
             case "1" -> "10";
             case "2" -> "20";
@@ -78,6 +79,11 @@ public class ApiService {
     }
 
     public int updateSchedule(ScheduleRequest request) {
+        if (request.getSchStrDate() != null && request.getSchEndDate() != null
+                && request.getSchEndDate().isBefore(request.getSchStrDate())) {
+            request.setSchEndDate(request.getSchStrDate());
+        }
+        validateSchedule(request, true);
         return scheduleRepository.updateSchedule(
                 request.getScheduleNo(),
                 request.getScheduleTitle(),
@@ -93,6 +99,33 @@ public class ApiService {
 
     public void deleteSchedule(Long schNo) {
         scheduleRepository.deleteSchedule(schNo);
+    }
+
+    private void validateSchedule(ScheduleRequest request, boolean editing) {
+        if (request.getSchStrDate() == null || request.getSchEndDate() == null) {
+            throw new IllegalArgumentException("일정 시작일과 종료일을 입력해주세요.");
+        }
+        if (!editing && !request.getSchEndDate().isAfter(request.getSchStrDate())) {
+            throw new IllegalArgumentException("종료일은 시작일보다 늦은 날짜여야 합니다.");
+        }
+        if (request.getScheduleTitle() == null || request.getScheduleTitle().isBlank()
+                || request.getScheduleTitle().length() > 45) {
+            throw new IllegalArgumentException("일정명은 1~45자로 입력해주세요.");
+        }
+        if (request.getSchedulePayment() == null || request.getSchedulePayment().signum() < 0
+                || request.getSchedulePayment().compareTo(java.math.BigDecimal.valueOf(Integer.MAX_VALUE)) > 0) {
+            throw new IllegalArgumentException("수익금은 0~2,147,483,647원 사이로 입력해주세요.");
+        }
+        if (request.getScheduleMemo() != null && request.getScheduleMemo().length() > 45) {
+            throw new IllegalArgumentException("일정 상세는 45자 이내로 입력해주세요.");
+        }
+        if (request.getScheduleCategory() == null || !request.getScheduleCategory().matches("[1-7]")) {
+            throw new IllegalArgumentException("일정 종류를 선택해주세요.");
+        }
+        if (editing && (request.getScheduleNo() == null || request.getScheduleState() == null
+                || request.getScheduleState().equals("0"))) {
+            throw new IllegalArgumentException("수정할 일정과 일정 상태를 선택해주세요.");
+        }
     }
 
     public Map<String, Object> getMonthlyPaymentSum(int year, int month) {
