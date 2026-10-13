@@ -52,16 +52,13 @@ public class ApiService {
 
     public int addSchedule(ScheduleRequest request) {
         validateSchedule(request, false);
-        String schState = switch (request.getScheduleCategory()) {
-            case "1" -> "10";
-            case "2" -> "20";
-            case "3" -> "30";
-            case "4" -> "40";
-            case "5" -> "50";
-            case "6" -> "60";
-            case "7" -> "70";
-            default -> null;
-        };
+        String schState = request.getScheduleState();
+        if (schState == null || schState.equals("0")) {
+            schState = scheduleRepository.initialState(request.getScheduleCategory());
+        }
+        if (schState == null) {
+            throw new IllegalArgumentException("선택한 일정 종류에 상태가 없습니다.");
+        }
         return scheduleRepository.addSchedule(
                 request.getScheduleTitle(),
                 request.getSchStrDate().toString(),
@@ -122,12 +119,20 @@ public class ApiService {
         if (request.getScheduleMemo() != null && request.getScheduleMemo().length() > 45) {
             throw new IllegalArgumentException("일정 상세는 45자 이내로 입력해주세요.");
         }
-        if (request.getScheduleCategory() == null || !request.getScheduleCategory().matches("[1-7]")) {
+        if (request.getScheduleCategory() == null || !request.getScheduleCategory().matches("[1-9][0-9]*")) {
             throw new IllegalArgumentException("일정 종류를 선택해주세요.");
         }
         if (editing && (request.getScheduleNo() == null || request.getScheduleState() == null
                 || request.getScheduleState().equals("0"))) {
             throw new IllegalArgumentException("수정할 일정과 일정 상태를 선택해주세요.");
+        }
+        if (scheduleRepository.countVisibleCategory(request.getScheduleCategory()) == 0
+                && !(editing && scheduleRepository.countExistingCategory(request.getScheduleNo(), request.getScheduleCategory()) > 0)) {
+            throw new IllegalArgumentException("표시되는 일정 종류를 선택해주세요.");
+        }
+        if (request.getScheduleState() != null && !request.getScheduleState().equals("0")
+                && scheduleRepository.countCategoryState(request.getScheduleCategory(), request.getScheduleState()) == 0) {
+            throw new IllegalArgumentException("일정 종류에 맞는 상태를 선택해주세요.");
         }
     }
 

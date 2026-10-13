@@ -18,9 +18,22 @@ public interface ScheduleRepository extends JpaRepository<Contract, Long> {
     @Query(value = """
     SELECT *
     FROM TBL_CATEGORY
+    WHERE IS_VISIBLE = TRUE
     ORDER BY CATE_NO
     """, nativeQuery = true)
     List<Map<String, Object>> loadScheduleCategory();
+
+    @Query(value = "SELECT COUNT(*) FROM TBL_CATEGORY WHERE CATE_NO = :cateNo AND IS_VISIBLE = TRUE", nativeQuery = true)
+    int countVisibleCategory(@Param("cateNo") String cateNo);
+
+    @Query(value = "SELECT COUNT(*) FROM TBL_SCHEDULE WHERE SCH_NO = :schNo AND SCH_CATEGORY = :cateNo", nativeQuery = true)
+    int countExistingCategory(@Param("schNo") Long schNo, @Param("cateNo") String cateNo);
+
+    @Query(value = "SELECT MIN(STATE_NO) FROM TBL_STATE WHERE UPPER_CATE_NO = :cateNo", nativeQuery = true)
+    String initialState(@Param("cateNo") String cateNo);
+
+    @Query(value = "SELECT COUNT(*) FROM TBL_STATE WHERE STATE_NO = :stateNo AND UPPER_CATE_NO = :cateNo", nativeQuery = true)
+    int countCategoryState(@Param("cateNo") String cateNo, @Param("stateNo") String stateNo);
 
     @Query(value = """
     SELECT *

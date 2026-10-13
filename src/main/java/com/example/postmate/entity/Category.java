@@ -20,4 +20,8 @@ public class Category {
 
     @Column(name = "CATE_NAME", length = 45, nullable = false)
     private String name;
+
+    @Builder.Default
+    @Column(name = "IS_VISIBLE", nullable = false)
+    private Boolean visible = true;
 }

@@ -204,6 +204,12 @@
                     </select>
                     <label for="scheduleCategory">일정종류 <span class="text-danger">*</span></label>
                 </div>
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="scheduleState" name="scheduleState" required>
+                        <option value="0">일정 상태를 선택해주세요</option>
+                    </select>
+                    <label for="scheduleState">일정상태 <span class="text-danger">*</span></label>
+                </div>
                 <div class="row g-2">
                     <div class="col-8">
                         <div class="form-floating mb-3">
@@ -368,7 +374,6 @@
     let contractData = [];
     let contractPage = 0;
     const contractsPerPage = 3;
-    let stateRequest = 0;
 
     new ResizeObserver(() => {
         document.querySelector('.workspace-sidebar').style.setProperty('--calendar-height',
@@ -787,6 +792,9 @@
             }else if(scheduleCategory.val() === "0"){
                 showAlert("일정종류를 선택하세요", "warning");
                 scheduleCategory.focus();
+            }else if($("#scheduleState").val() === "0"){
+                showAlert("일정상태를 선택하세요", "warning");
+                $("#scheduleState").focus();
             }else if(schedulePayment.val() === ""){
                 showAlert("수익금을 입력하세요", "warning");
                 schedulePayment.focus();
@@ -796,6 +804,7 @@
                     schStrDate          : schStrDate.val(),
                     schEndDate          : schEndDate.val(),
                     scheduleCategory    : scheduleCategory.val(),
+                    scheduleState       : $("#scheduleState").val(),
                     schedulePayment     : schedulePayment.val(),
                     preTax              : preTax,
                     scheduleMemo        : scheduleMemo.val()
@@ -924,13 +933,7 @@
     // 상세 모달에서 카테고리 변경 시 상태 목록 업데이트
     $("#detailScheduleCategory").on("change", function() {
         const cateNo = $(this).val();
-        if (cateNo !== "0") {
-            loadScheduleStateByCate(cateNo, null);
-        } else {
-            // 첫 번째 옵션만 남기고 제거
-            $("#detailScheduleState").find('option:not(:first)').remove();
-            $("#detailScheduleState").val("0");
-        }
+        loadScheduleStateByCate(cateNo, null);
     });
 
     //검색창에 enter키 입력시 바로 검색
@@ -967,6 +970,7 @@
 
         // 카테고리 셀렉트박스 옵션 로드 (이미 로드되어 있지 않은 경우)
         const categorySelect = document.getElementById('detailScheduleCategory');
+        categorySelect.querySelectorAll('option[data-historical]').forEach(option => option.remove());
         if (categorySelect.options.length <= 1) {
             // scheduleCategory의 옵션을 복사
             const sourceSelect = document.getElementById('scheduleCategory');
@@ -974,6 +978,12 @@
                 const option = sourceSelect.options[i].cloneNode(true);
                 categorySelect.appendChild(option);
             }
+        }
+        if (![...categorySelect.options].some(option => option.value === String(schedule.CATE_NO))) {
+            const historicalOption = new Option(`${schedule.CATE_NAME} (기존 종류)`, String(schedule.CATE_NO));
+            historicalOption.dataset.historical = 'true';
+            historicalOption.hidden = true;
+            categorySelect.add(historicalOption);
         }
         categorySelect.value = schedule.CATE_NO;
 
@@ -1130,18 +1140,25 @@
         });
     }
 
-    function loadScheduleStateByCate(cateNo, selectedStateNo) {
-        const requestId = ++stateRequest;
-        const stateSelect = $("#detailScheduleState");
+    $("#scheduleCategory").on("change", function() {
+        loadScheduleStateByCate($(this).val(), null, "#scheduleState");
+    });
+
+    function loadScheduleStateByCate(cateNo, selectedStateNo, target = "#detailScheduleState") {
+        const stateSelect = $(target);
+        const requestId = (stateSelect.data('requestId') || 0) + 1;
+        stateSelect.data('requestId', requestId);
         // 기존 옵션 제거 (첫 번째 옵션 제외)
         stateSelect.find('option:not(:first)').remove();
+        stateSelect.val("0");
+        if (cateNo === "0") return;
 
         $.ajax({
             url: "/loadScheduleStateByCate",
             type: "GET",
             data: { cateNo: cateNo },
             success: function(response) {
-                if (requestId !== stateRequest) return;
+                if (requestId !== stateSelect.data('requestId')) return;
                 $.each(response, function(i, v) {
                     let innerHTML = '<option value="'+v.STATE_NO+'">'+v.STATE_NAME+'</option>';
                     stateSelect.append(innerHTML);
@@ -1149,6 +1166,8 @@
                 // 선택된 상태값 설정
                 if (selectedStateNo) {
                     stateSelect.val(selectedStateNo);
+                } else if (response.length) {
+                    stateSelect.val(String(response[0].STATE_NO));
                 }
             },
             error: function(xhr) {

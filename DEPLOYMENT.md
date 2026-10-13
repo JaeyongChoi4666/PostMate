@@ -25,6 +25,14 @@ Each release stores its full Git commit in `REVISION` and its rollback target in
 The `jenkins` service account must retain its existing passwordless permission
 to restart `postmate`. The CI/CD configuration does not embed Jenkins or GitHub credentials.
 
+The application initializes `db/category-visibility.sql` before Hibernate schema
+validation. This also runs during the database-backed CI tests. It adds
+`TBL_CATEGORY.IS_VISIBLE` with a true default, hides the three retired schedule
+types without deleting their rows, and inserts Threads and its states once.
+Repeating initialization preserves schedules and existing state colors. These
+additive database changes remain compatible with the previous application if
+the deployment script rolls back the JAR. Database changes are not rolled back.
+
 To roll back manually on the server, obtain the target from the active release's
 `previous-release`, confirm it is a directory below `/opt/postmate/releases` with
 an `app.jar`, update `current` to that directory, and restart `postmate`.
