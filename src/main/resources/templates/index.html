@@ -207,7 +207,7 @@
                 <div class="row g-2">
                     <div class="col-8">
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control mb-3" id="schedulePayment" min="0" max="2147483647" placeholder="수익금을 입력하세요" name="schedulePayment" step="1000" value="0" required>
+                            <input type="number" class="form-control mb-3" id="schedulePayment" min="0" max="2147483647" placeholder="수익금을 입력하세요" name="schedulePayment" step="100" value="0" required>
                             <label for="schedulePayment">수익금 <span class="text-danger">*</span></label>
                         </div>
                     </div>
@@ -272,7 +272,7 @@
                 <div class="row g-2">
                     <div class="col-8">
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control" id="detailSchedulePayment" min="0" max="2147483647" placeholder="수익금" step="1000" disabled>
+                            <input type="number" class="form-control" id="detailSchedulePayment" min="0" max="2147483647" placeholder="수익금" step="100" disabled>
                             <label for="detailSchedulePayment">수익금</label>
                         </div>
                     </div>
@@ -403,7 +403,7 @@
 
     function openAddSchedule(date = selected || today) {
         $('#schStrDate').val(formatLocalDate(date));
-        $('#schEndDate').val(nextDate(formatLocalDate(date)));
+        $('#schEndDate').val(formatLocalDate(date));
         syncScheduleDates(false);
         bootstrap.Modal.getOrCreateInstance(document.getElementById('popup_addSchedule')).show();
     }
@@ -412,15 +412,10 @@
     function formatLocalDate(date) {
         return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     }
-    function nextDate(value) {
-        const date = parseLocalDate(value);
-        date.setDate(date.getDate() + 1);
-        return formatLocalDate(date);
-    }
     function syncScheduleDates(editing) {
         const start = document.getElementById(editing ? 'detailSchStrDate' : 'schStrDate');
         const end = document.getElementById(editing ? 'detailSchEndDate' : 'schEndDate');
-        end.min = start.value ? (editing ? start.value : nextDate(start.value)) : '';
+        end.min = start.value || '';
         if (end.value && end.min && end.value < end.min) end.value = end.min;
     }
     ['input', 'change'].forEach(event => {
@@ -786,8 +781,8 @@
             }else if(schEndDate.val() === ""){
                 showAlert("종료일을 입력하세요", "warning");
                 schEndDate.focus();
-            }else if(schStrDate.val() >= schEndDate.val()){
-                showAlert("종료일은 시작일보다 늦은 날짜여야 합니다", "warning");
+            }else if(schStrDate.val() > schEndDate.val()){
+                showAlert("종료일은 시작일과 같거나 이후여야 합니다", "warning");
                 schEndDate.focus();
             }else if(scheduleCategory.val() === "0"){
                 showAlert("일정종류를 선택하세요", "warning");

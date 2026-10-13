@@ -34,9 +34,33 @@ class ApiServiceValidationTests {
     }
 
     @Test
-    void addingSameDayOrReversedDatesDoesNotWrite() {
-        assertThrows(IllegalArgumentException.class, () -> service.addSchedule(request("2026-12-31", "2026-12-31")));
+    void addingReversedDatesDoesNotWrite() {
         assertThrows(IllegalArgumentException.class, () -> service.addSchedule(request("2027-01-01", "2026-12-31")));
+        verifyNoInteractions(schedules);
+    }
+
+    @Test
+    void sameDayFiveHundredWonScheduleCanBeAdded() {
+        ScheduleRequest request = request("2026-12-31", "2026-12-31");
+        request.setSchedulePayment(BigDecimal.valueOf(500));
+        service.addSchedule(request);
+        verify(schedules).addSchedule("검증용 일감", "2026-12-31", "2026-12-31", "1", "10", BigDecimal.valueOf(500), 0, null);
+    }
+
+    @Test
+    void hundredWonScheduleCanBeUpdated() {
+        ScheduleRequest request = request("2028-02-29", "2028-02-29");
+        request.setSchedulePayment(BigDecimal.valueOf(100));
+        service.updateSchedule(request);
+        verify(schedules).updateSchedule(1L, "검증용 일감", "2028-02-29", "2028-02-29", "1", "11", BigDecimal.valueOf(100), 0, null);
+    }
+
+    @Test
+    void nonHundredWonAmountIsRejected() {
+        ScheduleRequest request = request("2026-12-31", "2026-12-31");
+        request.setSchedulePayment(BigDecimal.valueOf(550));
+        assertThrows(IllegalArgumentException.class, () -> service.addSchedule(request));
+        assertThrows(IllegalArgumentException.class, () -> service.updateSchedule(request));
         verifyNoInteractions(schedules);
     }
 

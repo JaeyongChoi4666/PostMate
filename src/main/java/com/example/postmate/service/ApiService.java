@@ -105,8 +105,8 @@ public class ApiService {
         if (request.getSchStrDate() == null || request.getSchEndDate() == null) {
             throw new IllegalArgumentException("일정 시작일과 종료일을 입력해주세요.");
         }
-        if (!editing && !request.getSchEndDate().isAfter(request.getSchStrDate())) {
-            throw new IllegalArgumentException("종료일은 시작일보다 늦은 날짜여야 합니다.");
+        if (request.getSchEndDate().isBefore(request.getSchStrDate())) {
+            throw new IllegalArgumentException("종료일은 시작일과 같거나 이후여야 합니다.");
         }
         if (request.getScheduleTitle() == null || request.getScheduleTitle().isBlank()
                 || request.getScheduleTitle().length() > 45) {
@@ -115,6 +115,9 @@ public class ApiService {
         if (request.getSchedulePayment() == null || request.getSchedulePayment().signum() < 0
                 || request.getSchedulePayment().compareTo(java.math.BigDecimal.valueOf(Integer.MAX_VALUE)) > 0) {
             throw new IllegalArgumentException("수익금은 0~2,147,483,647원 사이로 입력해주세요.");
+        }
+        if (request.getSchedulePayment().remainder(java.math.BigDecimal.valueOf(100)).signum() != 0) {
+            throw new IllegalArgumentException("수익금은 100원 단위로 입력해주세요.");
         }
         if (request.getScheduleMemo() != null && request.getScheduleMemo().length() > 45) {
             throw new IllegalArgumentException("일정 상세는 45자 이내로 입력해주세요.");
